@@ -1,0 +1,23 @@
+enum ConversationStatus {
+    OPEN
+    BOOKED
+    CLOSED
+}
+
+enum Channel {
+    WHATSAPP
+    WEB_CHAT
+}
+
+enum Sender {
+    CUSTOMER
+    TRADER
+    SYSTEM
+}
+
+enum BookingStatus {
+    PENDING
+    CONFIRMED
+    COMPLETED
+    CANCELLED
+}

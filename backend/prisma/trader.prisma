@@ -1,0 +1,14 @@
+model Trader {
+    id            String         @id @default(uuid())
+    businessId    String?
+    business      Business?      @relation(fields: [businessId], references: [id])
+    name          String
+    phone         String
+    email         String?
+    createdAt     DateTime       @default(now())
+    workAreas     WorkArea[]
+    converSations Conversation[]
+    bookings      Booking[]
+
+    @@index([businessId])
+}
