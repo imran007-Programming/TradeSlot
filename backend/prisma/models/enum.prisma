@@ -1,0 +1,42 @@
+enum ConversationStatus {
+  OPEN
+  BOOKED
+  CLOSED
+}
+
+enum Channel {
+  WHATSAPP
+  WEB_CHAT
+}
+
+enum Sender {
+  CUSTOMER
+  TRADER
+  SYSTEM
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  REQUIRES_PAYMENT
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum Role {
+  TRADER
+  CUSTOMER
+  ADMIN
+}
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  CANCELLED
+}

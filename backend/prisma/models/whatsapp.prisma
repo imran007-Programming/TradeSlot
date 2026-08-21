@@ -1,0 +1,7 @@
+model WhatsappLog {
+  id        String   @id @default(uuid())
+  phone     String
+  message   String
+  status    String
+  createdAt DateTime @default(now())
+}

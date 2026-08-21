@@ -1,7 +1,0 @@
-model Business {
-    id                String   @id @default(uuid())
-    name              String
-    stripeConnectedId String?
-    createdAt         DateTime @default(now())
-    traders           Trader[]
-}

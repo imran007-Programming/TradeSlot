@@ -1,8 +1,0 @@
-model Customer {
-    id            String         @id @default(uuid())
-    name          String?
-    phone         String         @unique
-    createdAt     DateTime       @default(now())
-    conversations Conversation[]
-    bookings      Booking[]
-}

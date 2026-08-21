@@ -1,0 +1,21 @@
+model Customer {
+  id            String         @id @default(uuid())
+  name          String?
+  phone         String         @unique
+  createdAt     DateTime       @default(now())
+  conversations Conversation[]
+  bookings      Booking[]
+}
+
+model Conversation {
+  id         String             @id @default(uuid())
+  customerId String
+  customer   Customer           @relation(fields: [customerId], references: [id])
+  traderId   String
+  trader     Trader             @relation(fields: [traderId], references: [id])
+  channel    Channel
+  status     ConversationStatus @default(OPEN)
+  createdAt  DateTime           @default(now())
+  messages   Message[]
+  bookings   Booking[]
+}

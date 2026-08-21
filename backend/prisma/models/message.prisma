@@ -1,0 +1,9 @@
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         Sender
+  channel        Channel
+  content        String
+  sentAt         DateTime     @default(now())
+}

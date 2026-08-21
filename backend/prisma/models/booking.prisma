@@ -1,0 +1,18 @@
+model Booking {
+  id             String        @id @default(uuid())
+  customerId     String
+  customer       Customer      @relation(fields: [customerId], references: [id])
+  trderId        String
+  trader         Trader        @relation(fields: [trderId], references: [id])
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id])
+  slotStart      DateTime
+  slotEnd        DateTime
+  buffertMinutes Int
+  bookingFee     Decimal       @db.Decimal(10, 2)
+  status         BookingStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  payment        Payment[]
+
+  @@index([trderId, slotStart, slotEnd])
+}
