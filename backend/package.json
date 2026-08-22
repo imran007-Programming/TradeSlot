@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "postinstall": "prisma generate --schema=prisma/models",
+    "postinstall": "node node_modules/.bin/prisma generate --schema=prisma/models",
     "build": "tsc",
     "start": "node dist/server.js",
     "db:generate": "prisma generate --schema=prisma/models",
