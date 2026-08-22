@@ -14,22 +14,23 @@ declare global {
 }
 
 const authGuard = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.accessToken;
-
+    // Check cookie or Bearer token header for cross-origin / local compatibility!
+    const authHeader = req.headers.authorization;
+    const token = req.cookies?.accessToken || (authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null);
 
     if (!token) {
-        return next(new AppError(401, 'Authentication Required'))
+        return next(new AppError(401, 'Authentication Required'));
     }
     try {
-        const decode = verifyToken(token) as any
+        const decode = verifyToken(token) as any;
         req.user = {
             userId: decode.userId,
             role: decode.role
-        }
-        next()
+        };
+        next();
     } catch (error) {
-        next(new AppError(401, 'Invalid token'))
+        next(new AppError(401, 'Invalid token'));
     }
-}
+};
 
-export default authGuard
+export default authGuard;

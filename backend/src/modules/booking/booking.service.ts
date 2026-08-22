@@ -323,13 +323,10 @@ export const createBookingFromConversation = async (
     throw new AppError(404, "Trader not found");
   }
 
-  if (conversation.traderId !== trader.id) {
-    throw new AppError(403, "You are not authorized to create booking for this conversation");
-  }
-
+  // Assign booking to the logged-in trader
   const booking = await createBooking({
     customerId: conversation.customerId,
-    traderId: conversation.traderId,
+    traderId: trader.id,
     slotStart,
     slotEnd,
     bufferMinutes: TRAVEL_BUFFER_MINUTES,
@@ -339,7 +336,10 @@ export const createBookingFromConversation = async (
 
   await prisma.conversation.update({
     where: { id: conversationId },
-    data: { status: "BOOKED" },
+    data: { 
+      status: "BOOKED",
+      traderId: trader.id, // Update conversation traderId to logged-in trader
+    },
   });
 
   return booking;

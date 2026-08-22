@@ -1,31 +1,33 @@
-import twilio from "twilio";
-
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioWhatsAppNumber = process.env.TWILIO_WHATSAPP_NUMBER;
-
-const client = twilio(accountSid, authToken);
+const ultraMsgInstance = process.env.ULTRAMSG_INSTANCE_ID;
+const ultraMsgToken = process.env.ULTRAMSG_TOKEN;
 
 export const sendWhatsAppMessage = async (
   toPhoneNumber: string,
   messageBody: string
 ) => {
   try {
-    const message = await client.messages.create({
-      from: `whatsapp:${twilioWhatsAppNumber}`,
+    const url = `https://api.ultramsg.com/${ultraMsgInstance}/messages/chat`;
+    const body = new URLSearchParams({
+      token: ultraMsgToken!,
+      to: toPhoneNumber,
       body: messageBody,
-      to: `whatsapp:${toPhoneNumber}`,
     });
 
-    return {
-      success: true,
-      messageSid: message.sid,
-    };
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+    });
+
+    const data = await response.json() as any;
+
+    if (data.sent === "true" || data.id) {
+      return { success: true, messageSid: data.id };
+    } else {
+      return { success: false, error: JSON.stringify(data) };
+    }
   } catch (error) {
-    return {
-      success: false,
-      error: (error as any).message,
-    };
+    return { success: false, error: (error as any).message };
   }
 };
 

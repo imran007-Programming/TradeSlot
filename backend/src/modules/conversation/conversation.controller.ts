@@ -95,6 +95,31 @@ export const updateConversationStatusController = async (
   }
 };
 
+export const deleteConversationController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const conversationId = Array.isArray(req.params.conversationId)
+      ? req.params.conversationId[0]
+      : req.params.conversationId;
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new AppError(401, "User not authenticated");
+
+    await conversationService.deleteConversation(conversationId, userId);
+
+    return sendResponse(res, {
+      success: true,
+      message: "Conversation deleted successfully",
+      statusCode: 200,
+      data: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const sendMessageToConversationController = async (
   req: Request,
   res: Response,

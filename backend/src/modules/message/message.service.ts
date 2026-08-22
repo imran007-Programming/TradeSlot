@@ -19,6 +19,10 @@ export const receiveMessage = async (data: IReceiveMessage) => {
         throw new AppError(400, "Message content is required");
     }
 
+    // Clean phone number (digits only)
+    const cleanPhone = phone.replace(/\D/g, "");
+    const phoneSuffix = cleanPhone.slice(-10); // Last 10 digits to match 017... and 88017...
+
     // 2. Check trader
     const trader = await prisma.trader.findUnique({
         where: {
@@ -30,31 +34,47 @@ export const receiveMessage = async (data: IReceiveMessage) => {
         throw new AppError(404, "Trader not found");
     }
 
-    // 3. Find or create customer
-    const customer = await prisma.customer.upsert({
+    // 3. Find or create customer (matching exact phone or last 10 digits)
+    let customer = await prisma.customer.findFirst({
         where: {
-            phone,
-        },
-        update: {
-            ...(name && { name }),
-        },
-        create: {
-            phone,
-            name: name ?? "Unknown Customer",
+            OR: [
+                { phone: cleanPhone },
+                { phone: { endsWith: phoneSuffix } },
+            ],
         },
     });
 
-    // 4. Find existing OPEN conversation
+    if (customer) {
+        if (name && customer.name !== name) {
+            customer = await prisma.customer.update({
+                where: { id: customer.id },
+                data: { name },
+            });
+        }
+    } else {
+        customer = await prisma.customer.create({
+            data: {
+                phone: cleanPhone,
+                name: name ?? "Unknown Customer",
+            },
+        });
+    }
+
+    // 4. Find existing active conversation (OPEN or BOOKED) for this customer & trader
     let conversation = await prisma.conversation.findFirst({
         where: {
             customerId: customer.id,
             traderId: trader.id,
-            channel,
-            status: "OPEN",
+            status: {
+                in: ["OPEN", "BOOKED"],
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
         },
     });
 
-    // 5. Create conversation if doesn't exist
+    // 5. Create conversation ONLY if no active conversation exists
     if (!conversation) {
         conversation = await prisma.conversation.create({
             data: {
@@ -66,7 +86,7 @@ export const receiveMessage = async (data: IReceiveMessage) => {
         });
     }
 
-    // 6. Create message
+    // 6. Create message under existing conversation
     const message = await prisma.message.create({
         data: {
             conversationId: conversation.id,

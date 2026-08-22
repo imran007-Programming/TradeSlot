@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { handleWhatsAppMessage } from "./whatsapp.service";
 import { sendResponse } from "../../../utils/response";
 import { AppError } from "../../../utils/Apperror";
+import { prisma } from "../../../lib/prisma";
 
 export const receiveWhatsAppMessage = async (
   req: Request,
@@ -9,35 +10,63 @@ export const receiveWhatsAppMessage = async (
   next: NextFunction
 ) => {
   try {
-    // Twilio sends data in form-encoded format
-    const { From, Body, ProfileName } = req.body;
+    console.log("📥 Incoming WhatsApp Webhook Payload:", req.body);
 
-    if (!From || !Body) {
-      throw new AppError(400, "Missing required fields: From, Body");
+    // Only process incoming messages
+    if (req.body?.event_type !== "message_received") {
+      return res.status(200).json({ status: "ignored" });
     }
 
-    // Extract phone number from Twilio format (whatsapp:+1234567890)
-    const phoneNumber = From.replace("whatsapp:", "");
-    const traderId = process.env.TRADER_ID; // For Twilio, trader ID from env or request
+    const payload = req.body?.data;
+    if (!payload || payload.fromMe) {
+      return res.status(200).json({ status: "ignored" });
+    }
 
-    if (!traderId) {
-      throw new AppError(400, "Trader ID is required");
+    const From = payload.from;
+    const Body = payload.body;
+    const ProfileName = payload.pushname;
+
+    if (!From || !Body?.trim()) {
+      return res.status(200).json({ status: "ignored" });
+    }
+
+    // UltraMsg sends phone as 8801647153126@c.us or plain number
+    const phoneNumber = From.replace(/@c\.us$/, "").replace(/\D/g, "");
+    
+    // Resolve trader ID dynamically
+    let traderId = process.env.TRADER_ID;
+
+    // Check if trader exists in DB
+    const existingTrader = traderId
+      ? await prisma.trader.findUnique({ where: { id: traderId } })
+      : null;
+
+    if (!existingTrader) {
+      // Fallback to first registered trader in database so message connects to logged in trader!
+      const firstTrader = await prisma.trader.findFirst();
+      if (firstTrader) {
+        traderId = firstTrader.id;
+      } else {
+        console.error("❌ No trader account exists in database");
+        return res.status(200).send("<Response></Response>");
+      }
     }
 
     const result = await handleWhatsAppMessage({
       from: phoneNumber,
       text: Body,
-      name: ProfileName,
-      traderId,
+      name: ProfileName || "WhatsApp Customer",
+      traderId: traderId!,
     });
 
-    return sendResponse(res, {
-      success: true,
-      message: "WhatsApp message received successfully",
-      statusCode: 201,
-      data: result,
-    });
+    console.log(`✅ WhatsApp message processed for trader: ${traderId}`);
+
+    // Twilio expects TwiML XML response or 200 OK
+    res.type("text/xml");
+    return res.status(200).send("<Response></Response>");
   } catch (error) {
-    next(error);
+    console.error("❌ WhatsApp webhook error:", error);
+    res.type("text/xml");
+    return res.status(200).send("<Response></Response>");
   }
 };

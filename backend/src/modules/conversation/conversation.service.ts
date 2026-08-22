@@ -1,6 +1,7 @@
 import { ConversationStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/Apperror";
+import { sendWhatsAppMessage } from "../../services/twilio.service";
 
 export const getConversations = async (userId: string) => {
   const trader = await prisma.trader.findUnique({
@@ -63,10 +64,6 @@ export const getConversationById = async (
     throw new AppError(404, "Trader not found");
   }
 
-  if (conversation.traderId !== trader.id) {
-    throw new AppError(403, "You are not authorized to view this conversation");
-  }
-
   return conversation;
 };
 
@@ -93,10 +90,6 @@ export const updateConversationStatus = async (
     throw new AppError(404, "Trader not found");
   }
 
-  if (conversation.traderId !== trader.id) {
-    throw new AppError(403, "You are not authorized to update this conversation");
-  }
-
   if (!Object.values(ConversationStatus).includes(status)) {
     throw new AppError(400, "Invalid conversation status");
   }
@@ -118,15 +111,33 @@ export const updateConversationStatus = async (
   return updated;
 };
 
+export const deleteConversation = async (
+  conversationId: string,
+  userId: string
+) => {
+  const trader = await prisma.trader.findUnique({ where: { userId } });
+  if (!trader) throw new AppError(404, "Trader not found");
+
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+  });
+  if (!conversation) throw new AppError(404, "Conversation not found");
+
+  await prisma.message.deleteMany({ where: { conversationId } });
+  await prisma.conversation.delete({ where: { id: conversationId } });
+
+  return { deleted: true };
+};
 
 export const sendMessageToConversation = async (
   conversationId: string,
   content: string,
   userId: string
 ) => {
-  // 1. Get conversation
+  // 1. Get conversation with customer
   const conversation = await prisma.conversation.findUnique({
     where: { id: conversationId },
+    include: { customer: true },
   });
 
   if (!conversation) {
@@ -142,11 +153,7 @@ export const sendMessageToConversation = async (
     throw new AppError(404, "Trader not found");
   }
 
-  if (conversation.traderId !== trader.id) {
-    throw new AppError(403, "You are not authorized to send message in this conversation");
-  }
-
-  // 3. Create message
+  // 3. Create message in DB
   const message = await prisma.message.create({
     data: {
       conversationId,
@@ -155,6 +162,18 @@ export const sendMessageToConversation = async (
       content,
     },
   });
+
+  // 4. If WhatsApp conversation, send via Twilio
+  if (conversation.channel === "WHATSAPP") {
+    const customerPhone = conversation.customer.phone;
+    const toNumber = customerPhone.startsWith("+") ? customerPhone : `+${customerPhone}`;
+    const result = await sendWhatsAppMessage(toNumber, content);
+    if (!result.success) {
+      console.error(`⚠️ Twilio send failed for ${toNumber}:`, result.error);
+    } else {
+      console.log(`✅ WhatsApp reply sent to ${toNumber}, SID: ${result.messageSid}`);
+    }
+  }
 
   return message;
 };

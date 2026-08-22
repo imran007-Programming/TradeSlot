@@ -34,8 +34,6 @@ const register = async (data: IRegister) => {
                 create: {
                     name,
                     phone,
-                    email: email || null,
-                    password: hashedPassword,
                     business: {
                         create: {
                             name: businessName?.trim() || `${name}'s Business`,
