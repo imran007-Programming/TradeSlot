@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authRouter } from "../modules/auth/auth.routes";
 import { workAreaRoute } from "../modules/workArea/workArea.routes";
+import { bookingRouter } from "../modules/booking/booking.routes";
 import { messageRoutes } from "../modules/message/message.route";
 import { conversationRoutes } from "../modules/conversation/conversation.route";
 import { whatsappRoutes } from "../modules/channels/whatsapp/whatsapp.routes";
@@ -16,6 +17,10 @@ const routes = [
   {
     path: "/work-area",
     router: workAreaRoute,
+  },
+  {
+    path: "/bookings",
+    router: bookingRouter,
   },
   {
     path: "/messages",

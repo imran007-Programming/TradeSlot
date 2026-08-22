@@ -9,13 +9,25 @@ export const receiveWhatsAppMessage = async (
   next: NextFunction
 ) => {
   try {
-    const { from, text, timestamp, name, traderId } = req.body;
+    // Twilio sends data in form-encoded format
+    const { From, Body, ProfileName } = req.body;
+
+    if (!From || !Body) {
+      throw new AppError(400, "Missing required fields: From, Body");
+    }
+
+    // Extract phone number from Twilio format (whatsapp:+1234567890)
+    const phoneNumber = From.replace("whatsapp:", "");
+    const traderId = process.env.TRADER_ID; // For Twilio, trader ID from env or request
+
+    if (!traderId) {
+      throw new AppError(400, "Trader ID is required");
+    }
 
     const result = await handleWhatsAppMessage({
-      from,
-      text,
-      timestamp,
-      name,
+      from: phoneNumber,
+      text: Body,
+      name: ProfileName,
       traderId,
     });
 

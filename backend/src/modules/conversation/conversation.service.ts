@@ -117,3 +117,44 @@ export const updateConversationStatus = async (
 
   return updated;
 };
+
+
+export const sendMessageToConversation = async (
+  conversationId: string,
+  content: string,
+  userId: string
+) => {
+  // 1. Get conversation
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+  });
+
+  if (!conversation) {
+    throw new AppError(404, "Conversation not found");
+  }
+
+  // 2. Verify trader ownership
+  const trader = await prisma.trader.findUnique({
+    where: { userId },
+  });
+
+  if (!trader) {
+    throw new AppError(404, "Trader not found");
+  }
+
+  if (conversation.traderId !== trader.id) {
+    throw new AppError(403, "You are not authorized to send message in this conversation");
+  }
+
+  // 3. Create message
+  const message = await prisma.message.create({
+    data: {
+      conversationId,
+      sender: "TRADER",
+      channel: conversation.channel,
+      content,
+    },
+  });
+
+  return message;
+};
