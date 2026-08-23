@@ -449,17 +449,38 @@ export default function DashboardPage() {
                     </div>
 
                     {selectedConversation.bookings && selectedConversation.bookings.length > 0 && (
-                      <div className="bg-violet-50 p-3 border-b border-violet-100 flex-shrink-0 space-y-2">
+                      <div className="bg-gradient-to-r from-violet-50 to-indigo-50 p-3 border-b border-violet-100 flex-shrink-0 space-y-2">
+                        <p className="text-[10px] font-bold text-violet-500 uppercase tracking-widest px-1 flex items-center gap-1.5"><CalendarDays size={11} /> Bookings</p>
                         {selectedConversation.bookings.map(b => (
-                          <div key={b.id} className="p-3 rounded-xl bg-white border border-violet-200 flex justify-between items-center gap-2">
-                            <div className="text-xs space-y-0.5">
-                              <p className="text-slate-700"><strong>Slot:</strong> {new Date(b.slotStart).toLocaleString()}</p>
-                              <p className="text-slate-500">Fee: <strong className="text-slate-800">${b.bookingFee}</strong> | <strong className="text-emerald-600">{b.status}</strong></p>
+                          <div key={b.id} className="rounded-2xl bg-white border border-violet-200 shadow-sm overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-2 bg-violet-600 text-white">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle size={13} />
+                                <span className="text-xs font-bold">Booking Confirmed</span>
+                              </div>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                b.status === 'CONFIRMED' ? 'bg-emerald-400/30 text-emerald-100' :
+                                b.status === 'COMPLETED' ? 'bg-sky-400/30 text-sky-100' :
+                                b.status === 'CANCELLED' ? 'bg-red-400/30 text-red-100' :
+                                'bg-amber-400/30 text-amber-100'
+                              }`}>{b.status}</span>
                             </div>
-                            <button onClick={() => handleGeneratePaymentLink(b.id)} disabled={generatingPayment === b.id}
-                              className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5">
-                              <CreditCard size={12} /> {generatingPayment === b.id ? 'Generating...' : 'Send Stripe Link'}
-                            </button>
+                            <div className="px-4 py-3 flex justify-between items-center gap-3">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-1.5 text-xs text-slate-700">
+                                  <Clock size={11} className="text-violet-400" />
+                                  <span className="font-semibold">{new Date(b.slotStart).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-slate-500">
+                                  <CreditCard size={11} className="text-violet-400" />
+                                  <span>Fee: <strong className="text-slate-800">${b.bookingFee}</strong></span>
+                                </div>
+                              </div>
+                              <button onClick={() => handleGeneratePaymentLink(b.id)} disabled={generatingPayment === b.id}
+                                className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5 shadow-sm shadow-violet-200 whitespace-nowrap">
+                                <CreditCard size={12} /> {generatingPayment === b.id ? 'Generating...' : 'Send Stripe Link'}
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
