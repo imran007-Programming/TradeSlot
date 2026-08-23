@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { Send, Plus, Search, CreditCard, MessageSquare } from 'lucide-react';
-import { Conversation } from '@/types/dashboard';
+import { Conversation, Booking, Message } from '@/types/dashboard';
 
 interface Props {
   conversation: Conversation | null;
@@ -45,7 +45,7 @@ export default function ChatPanel({ conversation, replyContent, sendingMessage, 
 
       {conversation.bookings && conversation.bookings.length > 0 && (
         <div className="bg-violet-50 p-3 border-b border-violet-100 flex-shrink-0 space-y-2">
-          {conversation.bookings.map(b => (
+          {conversation.bookings.map((b: Booking) => (
             <div key={b.id} className="p-3 rounded-xl bg-white border border-violet-200 flex justify-between items-center gap-2">
               <div className="text-xs space-y-0.5">
                 <p className="text-slate-700"><strong>Slot:</strong> {new Date(b.slotStart).toLocaleString()}</p>
@@ -62,7 +62,7 @@ export default function ChatPanel({ conversation, replyContent, sendingMessage, 
 
       <div className="flex-1 p-4 overflow-y-auto bg-slate-50 space-y-3 min-h-0">
         {conversation.messages.length === 0 && <div className="text-center text-slate-400 text-xs pt-8">No messages yet.</div>}
-        {conversation.messages.map(msg => {
+        {conversation.messages.map((msg: Message) => {
           const isCustomer = msg.sender === 'CUSTOMER';
           if (msg.sender === 'SYSTEM') return (
             <div key={msg.id} className="flex justify-center">
