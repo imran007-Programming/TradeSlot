@@ -215,6 +215,28 @@ const getPaymentByBookingId = async (bookingId: string, userId: string) => {
     return prisma.payment.findUnique({ where: { bookingId } });
 };
 
+const verifyAndConfirmSession = async (sessionId: string) => {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!session) throw new AppError(404, "Session not found");
+
+    const bookingId = session.metadata?.bookingId;
+    if (!bookingId) throw new AppError(400, "No booking linked to this session");
+
+    if (session.payment_status === "paid") {
+        await prisma.payment.updateMany({
+            where: { bookingId },
+            data: { status: "SUCCEEDED", stripePaymentIntentId: session.payment_intent as string },
+        });
+        await prisma.booking.update({
+            where: { id: bookingId },
+            data: { status: "CONFIRMED" },
+        });
+        console.log(`✅ Session verified & Booking CONFIRMED: ${bookingId}`);
+    }
+
+    return { paid: session.payment_status === "paid", bookingId };
+};
+
 const getPaymentSummary = async (userId: string) => {
     const trader = await prisma.trader.findUnique({ where: { userId } });
     if (!trader) throw new AppError(404, "Trader not found");
@@ -243,6 +265,7 @@ export const PaymentService = {
     handleCheckoutCompleted,
     handlePaymentSuccess,
     handlePaymentFailed,
+    verifyAndConfirmSession,
     getPaymentByBookingId,
     getPaymentSummary,
 };

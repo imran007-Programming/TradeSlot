@@ -1,4 +1,4 @@
-import { Plus, CreditCard } from 'lucide-react';
+import { CreditCard, MessageSquare } from 'lucide-react';
 import { Booking } from '@/types/dashboard';
 
 interface Props {
@@ -6,10 +6,9 @@ interface Props {
   generatingPayment: string | null;
   onStatusChange: (id: string, status: string) => void;
   onGeneratePaymentLink: (id: string) => void;
-  onNewBooking: () => void;
 }
 
-export default function BookingsTab({ bookings, generatingPayment, onStatusChange, onGeneratePaymentLink, onNewBooking }: Props) {
+export default function BookingsTab({ bookings, generatingPayment, onStatusChange, onGeneratePaymentLink }: Props) {
   return (
     <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col p-5 min-h-0">
       <div className="flex flex-wrap justify-between items-center gap-4 border-b border-slate-100 pb-4 flex-shrink-0">
@@ -17,9 +16,9 @@ export default function BookingsTab({ bookings, generatingPayment, onStatusChang
           <h2 className="text-sm font-bold text-slate-800">Job Bookings</h2>
           <p className="text-xs text-slate-400 mt-0.5">30-min travel buffers applied</p>
         </div>
-        <button onClick={onNewBooking} className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-          <Plus size={14} /> New Booking
-        </button>
+        <span className="text-[11px] text-slate-400 flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+          <MessageSquare size={11} /> To create a booking, select a conversation from Messages tab
+        </span>
       </div>
       <div className="overflow-y-auto flex-1 mt-4">
         <table className="w-full text-left">

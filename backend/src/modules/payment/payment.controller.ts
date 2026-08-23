@@ -3,6 +3,28 @@ import { PaymentService } from "./payment.service";
 import { sendResponse } from "../../utils/response";
 import { AppError } from "../../utils/Apperror";
 
+export const verifySessionController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const sessionId = req.query.session_id as string;
+        if (!sessionId) throw new AppError(400, "session_id is required");
+
+        const result = await PaymentService.verifyAndConfirmSession(sessionId);
+
+        return sendResponse(res, {
+            success: true,
+            message: result.paid ? "Payment confirmed" : "Payment not completed",
+            statusCode: 200,
+            data: result,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const createCheckoutSessionController = async (
     req: Request,
     res: Response,

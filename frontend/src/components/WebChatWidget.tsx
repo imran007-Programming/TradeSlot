@@ -106,50 +106,39 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-2rem)] bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-3xl shadow-2xl flex flex-col z-50 overflow-hidden text-slate-100 font-sans"
+      className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-2rem)] bg-white border border-slate-200 rounded-3xl shadow-2xl flex flex-col z-50 overflow-hidden text-slate-800 font-sans"
       style={{ height: '600px' }}
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-900/80 via-slate-900 to-purple-900/80 p-4 border-b border-slate-800 flex justify-between items-center flex-shrink-0">
+      <div className="bg-white p-4 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="relative">
             <img
               src="/images.png"
               alt="TradeSlot Avatar"
-              className="w-10 h-10 rounded-full object-cover border-2 border-indigo-400/50 shadow-md"
+              className="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-sm"
             />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-400 border-2 border-slate-900 rounded-full" />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-white">TradeSlot Direct Chat</h3>
-            <p className="text-[11px] text-emerald-400 font-semibold">🟢 Online • Web Chat</p>
+            <h3 className="font-bold text-sm text-slate-800">TradeSlot Direct Chat</h3>
+            <p className="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Online • Web Chat
+            </p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl w-8 h-8 flex items-center justify-center transition"
+          className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl w-8 h-8 flex items-center justify-center transition cursor-pointer"
         >
           ✕
         </button>
       </div>
 
-      {/* WhatsApp Banner */}
-      <div className="bg-emerald-950/80 border-b border-emerald-800/60 px-4 py-2 flex items-center justify-between text-xs text-emerald-300 flex-shrink-0">
-        <span className="flex items-center gap-1.5 font-medium">💬 Prefer WhatsApp?</span>
-        <a
-          href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801700000000'}?text=Hello%20TradeSlot%2C%20I%20need%20a%20booking!`}
-          target="_blank"
-          rel="noreferrer"
-          className="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg font-bold text-[11px] transition"
-        >
-          Open WhatsApp ↗
-        </a>
-      </div>
-
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-950/70">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
         {step === 'chat' && messages.length === 0 && (
-          <div className="text-center text-slate-500 text-xs pt-6">
+          <div className="text-center text-slate-400 text-xs pt-6">
             Send a message to start the conversation.
           </div>
         )}
@@ -165,53 +154,53 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
                 <img
                   src="/images.png"
                   alt="Trader Avatar"
-                  className="w-6 h-6 rounded-full object-cover border border-slate-700 shadow-xs flex-shrink-0 mb-0.5"
+                  className="w-6 h-6 rounded-full object-cover border border-slate-200 shadow-xs flex-shrink-0 mb-0.5"
                 />
               )}
               <div
-                className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-lg break-words text-xs leading-relaxed ${
+                className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-xs break-words text-xs leading-relaxed ${
                   isCustomer
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-none'
+                    ? 'bg-violet-600 text-white rounded-br-none'
                     : isPayment
-                    ? 'bg-slate-900 border border-purple-500/40 text-slate-100 rounded-bl-none'
+                    ? 'bg-white border border-violet-200 text-slate-800 rounded-bl-none'
                     : isBookingMsg(msg.content)
-                    ? 'bg-slate-900 border border-emerald-500/40 text-slate-100 rounded-bl-none p-0 overflow-hidden'
-                    : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-bl-none'
+                    ? 'bg-white border border-emerald-200 text-slate-800 rounded-bl-none p-0 overflow-hidden'
+                    : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'
                 }`}
               >
                 {isBookingMsg(msg.content) ? (
                   <div className="space-y-0">
-                    <div className="bg-emerald-600/20 border-b border-emerald-500/30 px-4 py-2 flex items-center gap-2">
-                      <span className="text-emerald-400 text-base">✅</span>
-                      <p className="text-emerald-400 font-bold text-xs">Booking Confirmed!</p>
+                    <div className="bg-emerald-50 border-b border-emerald-100 px-4 py-2 flex items-center gap-2">
+                      <span className="text-emerald-600 text-base">✅</span>
+                      <p className="text-emerald-700 font-bold text-xs">Booking Confirmed!</p>
                     </div>
                     <div className="px-4 py-3 space-y-1.5">
                       {(() => {
                         const b = parseBooking(msg.content);
                         return b ? (
                           <>
-                            <div className="flex items-center gap-2 text-slate-300">
-                              <span className="text-slate-500">🗓</span>
+                            <div className="flex items-center gap-2 text-slate-700">
+                              <span className="text-slate-400">🗓</span>
                               <span className="font-semibold">{b.slot}</span>
                             </div>
-                            <div className="flex items-center gap-2 text-slate-300">
-                              <span className="text-slate-500">💰</span>
-                              <span>Booking Fee: <strong className="text-white">${b.fee}</strong></span>
+                            <div className="flex items-center gap-2 text-slate-700">
+                              <span className="text-slate-400">💰</span>
+                              <span>Booking Fee: <strong className="text-slate-900">${b.fee}</strong></span>
                             </div>
                           </>
-                        ) : <p className="text-slate-300">{msg.content}</p>;
+                        ) : <p className="text-slate-700">{msg.content}</p>;
                       })()}
                     </div>
                   </div>
                 ) : isPayment && url ? (
                   <div className="space-y-2">
-                    <p className="text-[10px] font-semibold text-purple-300">💳 Payment Link</p>
-                    <p>{msg.content.replace(url, '').trim()}</p>
+                    <p className="text-[10px] font-semibold text-violet-600">💳 Payment Link</p>
+                    <p className="text-slate-700">{msg.content.replace(url, '').trim()}</p>
                     <a
                       href={url}
                       target="_blank"
                       rel="noreferrer"
-                      className="block w-full text-center py-2 px-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold rounded-xl transition"
+                      className="block w-full text-center py-2 px-3 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-xl transition shadow-xs"
                     >
                       💳 Complete Payment on Stripe
                     </a>
@@ -220,7 +209,7 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 )}
                 {msg.sentAt && (
-                  <span className="text-[9px] opacity-50 block text-right mt-1">
+                  <span className={`text-[9px] block text-right mt-1 ${isCustomer ? 'text-violet-200' : 'text-slate-400'}`}>
                     {new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
@@ -231,17 +220,17 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
 
         {loading && (
           <div className="flex justify-end">
-            <div className="bg-indigo-600/40 px-4 py-2.5 rounded-2xl rounded-br-none flex space-x-1.5">
-              <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-bounce" />
-              <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
-              <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
+            <div className="bg-violet-100 px-4 py-2.5 rounded-2xl rounded-br-none flex space-x-1.5">
+              <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" />
+              <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+              <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
             </div>
           </div>
         )}
 
         {error && (
           <div className="flex justify-center">
-            <p className="text-[10px] text-red-400 bg-red-950/50 border border-red-800 px-3 py-1.5 rounded-xl">{error}</p>
+            <p className="text-[10px] text-red-600 bg-red-50 border border-red-200 px-3 py-1.5 rounded-xl font-medium">{error}</p>
           </div>
         )}
 
@@ -250,15 +239,15 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
 
       {/* Customer Info Form */}
       {step === 'form' && (
-        <div className="border-t border-slate-800 p-5 space-y-3 bg-slate-900/90 flex-shrink-0">
-          <p className="text-xs text-slate-300 font-bold">Enter your details to start:</p>
-          {error && <p className="text-[10px] text-red-400">{error}</p>}
+        <div className="border-t border-slate-200 p-5 space-y-3 bg-white flex-shrink-0">
+          <p className="text-xs text-slate-700 font-bold">Enter your details to start:</p>
+          {error && <p className="text-[10px] text-red-600">{error}</p>}
           <input
             type="text"
             placeholder="Your Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
           />
           <input
             type="tel"
@@ -266,11 +255,11 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-            className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
           />
           <button
             onClick={handleStart}
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-lg"
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
           >
             Start Chat
           </button>
@@ -279,20 +268,20 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
 
       {/* Message Input */}
       {step === 'chat' && (
-        <div className="border-t border-slate-800 p-3 flex gap-2 bg-slate-900/90 flex-shrink-0">
+        <div className="border-t border-slate-200 p-3 flex gap-2 bg-white flex-shrink-0">
           <input
             type="text"
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="flex-1 px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
             disabled={loading}
           />
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl disabled:opacity-50 transition font-bold text-xs"
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl disabled:opacity-50 transition font-bold text-xs cursor-pointer shadow-sm"
           >
             Send
           </button>

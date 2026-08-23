@@ -654,10 +654,9 @@ export default function DashboardPage() {
                   <h2 className="text-sm font-bold text-slate-800">Job Bookings</h2>
                   <p className="text-xs text-slate-400 mt-0.5">30-min travel buffers applied</p>
                 </div>
-                <button onClick={() => setShowSlotsModal(true)}
-                  className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                  <Plus size={14} /> New Booking
-                </button>
+                <span className="text-[11px] text-slate-400 flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">
+                  <MessageSquare size={11} /> To create a booking, select a conversation from Messages tab
+                </span>
               </div>
               <div className="overflow-y-auto flex-1 mt-4">
                 <table className="w-full text-left">
