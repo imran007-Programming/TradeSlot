@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api';
 import { getCookie, deleteCookie } from '@/lib/cookies';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import {
   MessageSquare, CalendarDays, Users, MapPin, Zap, LogOut,
   RefreshCw, CreditCard, Search, Send, Plus, Trash2, CheckCircle,
@@ -144,8 +145,8 @@ export default function DashboardPage() {
           if (popup?.closed) { clearInterval(timer); checkStripe(); }
         }, 1000);
       }
-      else alert(res.message || 'Failed to generate Stripe link');
-    } catch (err: any) { alert(err.message); }
+      else toast.error(res.message || 'Failed to generate Stripe link');
+    } catch (err: any) { toast.error(err.message); }
     finally { setConnectingStripe(false); }
   };
 
@@ -153,8 +154,8 @@ export default function DashboardPage() {
     if (!confirm('Reset your Stripe connection?')) return;
     try {
       const res = await apiClient.post('/traders/stripe/reset');
-      if (res.success) { setStripeStatus({ connected: false, onboardingComplete: false }); alert('Reset done!'); }
-    } catch (err: any) { alert(err.message); }
+      if (res.success) { setStripeStatus({ connected: false, onboardingComplete: false }); toast.success('Stripe reset done!'); }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const handleLogout = async () => {
@@ -169,8 +170,8 @@ export default function DashboardPage() {
     try {
       const res = await apiClient.post(`/conversations/${selectedConversation.id}/messages`, { content });
       if (res.success) await fetchConversations();
-      else { setReplyContent(content); alert(res.message || 'Failed to send'); }
-    } catch (err: any) { setReplyContent(content); alert(err.message); }
+      else { setReplyContent(content); toast.error(res.message || 'Failed to send'); }
+    } catch (err: any) { setReplyContent(content); toast.error(err.message); }
     finally { setSendingMessage(false); }
   };
 
@@ -189,7 +190,7 @@ export default function DashboardPage() {
         await apiClient.post(`/conversations/${selectedConversation.id}/messages`, {
           content: 'Booking Confirmed: ' + new Date(slotStart).toLocaleString() + ' (Fee: $' + bookingFee + ')',
         });
-        await refreshAll(); alert('Booking created!');
+        await refreshAll(); toast.success('Booking created!');
       } else setBookingError(res.message || 'Failed to create booking');
     } catch (err: any) { setBookingError(err.message); }
     finally { setCreatingBooking(false); }
@@ -202,10 +203,10 @@ export default function DashboardPage() {
       if (res.success && res.data?.checkoutUrl) {
         if (selectedConversation) {
           await apiClient.post('/conversations/' + selectedConversation.id + '/messages', { content: 'Payment Link: ' + res.data.checkoutUrl });
-          await fetchConversations(); alert('Payment link sent!');
-        } else alert('Payment link:\n\n' + res.data.checkoutUrl);
-      } else alert(res.message || 'Failed to generate link');
-    } catch (err: any) { alert(err.message); }
+          await fetchConversations(); toast.success('Payment link sent!');
+        } else toast.info('Payment link:\n\n' + res.data.checkoutUrl);
+      } else toast.error(res.message || 'Failed to generate link');
+    } catch (err: any) { toast.error(err.message); }
     finally { setGeneratingPayment(null); }
   };
 
@@ -216,8 +217,8 @@ export default function DashboardPage() {
       const traderId = user?.trader?.id || selectedConversation?.traderId;
       const res = await apiClient.get('/bookings/slots/available?traderId=' + traderId + '&date=' + slotsDate);
       if (res.success) setAvailableSlots(res.data || []);
-      else alert(res.message || 'Could not fetch slots');
-    } catch (err: any) { alert(err.message); }
+      else toast.error(res.message || 'Could not fetch slots');
+    } catch (err: any) { toast.error(err.message); }
     finally { setLoadingSlots(false); }
   };
 
@@ -234,28 +235,45 @@ export default function DashboardPage() {
   const handleDeleteWorkArea = async (id: string) => {
     if (!confirm('Delete this work area?')) return;
     try { const res = await apiClient.delete('/work-area/' + id); if (res.success) await fetchWorkAreas(); }
-    catch (err: any) { alert(err.message); }
+    catch (err: any) { toast.error(err.message); }
   };
 
   const handleUpdateBookingStatus = async (bookingId: string, status: string) => {
-    try { const res = await apiClient.patch('/bookings/' + bookingId + '/status', { status }); if (res.success) await fetchBookings(); }
-    catch {}
+    try {
+      const res = await apiClient.patch('/bookings/' + bookingId + '/status', { status });
+      if (res.success) {
+        toast.success('Booking status updated!');
+        await fetchBookings();
+      } else {
+        toast.error(res.message || 'Failed to update booking status');
+      }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const handleUpdateConversationStatus = async (convId: string, status: string) => {
-    try { const res = await apiClient.patch('/conversations/' + convId + '/status', { status }); if (res.success) await fetchConversations(); }
-    catch {}
+    try {
+      const res = await apiClient.patch('/conversations/' + convId + '/status', { status });
+      if (res.success) {
+        toast.success('Conversation status updated!');
+        await fetchConversations();
+      } else {
+        toast.error(res.message || 'Failed to update conversation status');
+      }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const handleDeleteConversation = async (convId: string) => {
-    if (!confirm('Delete this conversation?')) return;
+    if (!confirm('Are you sure you want to delete this conversation?')) return;
     try {
       const res = await apiClient.delete(`/conversations/${convId}`);
       if (res.success) {
+        toast.success('Conversation deleted!');
         if (selectedConversation?.id === convId) setSelectedConversation(null);
         await fetchConversations();
+      } else {
+        toast.error(res.message || 'Failed to delete conversation');
       }
-    } catch (err: any) { alert(err.message); }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const allCustomers = Array.from(
@@ -403,8 +421,8 @@ export default function DashboardPage() {
                     const isSelected = selectedConversation?.id === conv.id;
                     const isWA = conv.channel === 'WHATSAPP';
                     return (
-                      <button key={conv.id} onClick={() => setSelectedConversation(conv)}
-                        className={`w-full text-left p-3.5 transition-all ${isSelected ? 'bg-violet-50 border-l-2 border-violet-500' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
+                      <div key={conv.id} onClick={() => setSelectedConversation(conv)}
+                        className={`w-full text-left p-3.5 transition-all cursor-pointer ${isSelected ? 'bg-violet-50 border-l-2 border-violet-500' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
                         <div className="flex justify-between items-start">
                           <div>
                             <h4 className="font-semibold text-slate-800 text-xs">{conv.customer.name}</h4>
@@ -431,7 +449,7 @@ export default function DashboardPage() {
                           </span>
                           <span className="text-slate-400 text-[10px]">{conv.messages.length} msgs</span>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>
@@ -469,7 +487,7 @@ export default function DashboardPage() {
                               <div className="space-y-1">
                                 <div className="flex items-center gap-1.5 text-xs text-slate-700">
                                   <Clock size={11} className="text-violet-400" />
-                                  <span className="font-semibold">{new Date(b.slotStart).toLocaleString([], { dateStyle: 'medium', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                                  <span className="font-semibold">{new Date(b.slotStart).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
                                   <CreditCard size={11} className="text-violet-400" />
@@ -576,7 +594,7 @@ export default function DashboardPage() {
                           <strong className="text-slate-700 block text-xs">{b.customer?.name || 'Customer'}</strong>
                           <span className="text-[11px] text-slate-400 font-mono">{b.customer?.phone}</span>
                         </td>
-                        <td className="p-3 text-slate-600 text-xs">{new Date(b.slotStart).toLocaleString([], { dateStyle: 'medium', hour: '2-digit', minute: '2-digit', hour12: true })} - {new Date(b.slotEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
+                        <td className="p-3 text-slate-600 text-xs">{new Date(b.slotStart).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })} - {new Date(b.slotEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
                         <td className="p-3 font-bold text-slate-800 text-xs">${b.bookingFee}</td>
                         <td className="p-3">
                           <select value={b.status} onChange={e => handleUpdateBookingStatus(b.id, e.target.value)}
