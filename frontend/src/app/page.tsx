@@ -422,11 +422,15 @@ export default function Home() {
           {/* Avatar button */}
           <button
             onClick={() => setShowChatOptions(prev => !prev)}
-            className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 shadow-2xl shadow-indigo-500/40 hover:scale-110 transition-transform flex items-center justify-center border-2 border-white"
+            className="relative w-14 h-14 rounded-full shadow-2xl shadow-indigo-500/40 hover:scale-110 transition-transform flex items-center justify-center border-2 border-white bg-slate-900 overflow-visible cursor-pointer"
           >
-            <span className="text-2xl">⚡</span>
+            <img
+              src="/images.png"
+              alt="TradeSlot Chat Avatar"
+              className="w-full h-full rounded-full object-cover"
+            />
             {/* Blinking green dot */}
-            <span className="absolute top-0.5 right-0.5 flex h-3.5 w-3.5">
+            <span className="absolute top-0.5 right-0.5 flex h-3.5 w-3.5 z-10">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white" />
             </span>

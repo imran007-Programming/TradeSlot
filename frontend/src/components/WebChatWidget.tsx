@@ -113,10 +113,12 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
       <div className="bg-gradient-to-r from-indigo-900/80 via-slate-900 to-purple-900/80 p-4 border-b border-slate-800 flex justify-between items-center flex-shrink-0">
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center font-bold text-white shadow-md">
-              ⚡
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-slate-900 rounded-full" />
+            <img
+              src="/images.png"
+              alt="TradeSlot Avatar"
+              className="w-10 h-10 rounded-full object-cover border-2 border-indigo-400/50 shadow-md"
+            />
+            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-400 border-2 border-slate-900 rounded-full" />
           </div>
           <div>
             <h3 className="font-bold text-sm text-white">TradeSlot Direct Chat</h3>
