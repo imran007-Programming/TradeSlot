@@ -372,20 +372,20 @@ export default function DashboardPage() {
       {/* Navbar */}
       <header className="h-14 bg-white border-b border-slate-200 px-5 flex items-center justify-between flex-shrink-0 z-30 shadow-sm">
         <div className="flex items-center space-x-3">
-          <Link href="/" className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-100">
-            <Zap size={15} className="text-white" />
+          <Link href="/" className="w-8 h-8 rounded-xl bg-[#0F172A] flex items-center justify-center shadow-md shadow-slate-300">
+            <Zap size={15} className="text-[#84EA00]" />
           </Link>
-          <h1 className="text-sm font-bold text-slate-800 tracking-tight">TradeSlot</h1>
-          <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded-md uppercase tracking-widest font-bold">Pro</span>
+          <h1 className="text-sm font-black text-[#0F172A] tracking-tight">TradeSlot</h1>
+          <span className="text-[10px] bg-[#F4FEE5] text-[#0F172A] border border-[#84EA00] px-1.5 py-0.5 rounded-md uppercase tracking-widest font-black">Pro</span>
         </div>
         <div className="flex items-center space-x-2">
-          <button onClick={() => setShowWorkAreaModal(true)} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer">
-            <MapPin size={13} /> Set Work Area
+          <button onClick={() => setShowWorkAreaModal(true)} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-[#0F172A] hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer">
+            <MapPin size={13} className="text-[#0F172A]" /> Set Work Area
           </button>
           {stripeStatus.onboardingComplete ? (
             <div className="flex items-center gap-1.5">
-              <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5">
-                <CreditCard size={13} /> Stripe Active
+              <span className="bg-[#F4FEE5] border border-[#84EA00] text-[#0F172A] text-xs px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5">
+                <CreditCard size={13} className="text-[#0F172A]" /> Stripe Active
               </span>
               <button
                 onClick={handleResetStripe}
@@ -396,7 +396,7 @@ export default function DashboardPage() {
               </button>
             </div>
           ) : (
-            <button onClick={handleConnectStripe} disabled={connectingStripe} className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50 transition shadow-sm flex items-center gap-1.5 cursor-pointer">
+            <button onClick={handleConnectStripe} disabled={connectingStripe} className="bg-[#84EA00] hover:bg-[#74D100] text-[#0F172A] px-3.5 py-1.5 rounded-lg text-xs font-black disabled:opacity-50 transition shadow-sm flex items-center gap-1.5 cursor-pointer border border-[#84EA00]">
               <CreditCard size={13} /> {connectingStripe ? 'Connecting...' : 'Connect Stripe'}
             </button>
           )}
@@ -416,22 +416,22 @@ export default function DashboardPage() {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Navigation</p>
             {navItems.map(({ tab, icon, label, count }) => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                  activeTab === tab ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50 border border-transparent'
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  activeTab === tab ? 'bg-[#F4FEE5] text-[#0F172A] border border-[#84EA00] shadow-xs' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'
                 }`}>
                 {icon} <span>{label}</span>
-                {count > 0 && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">{count}</span>}
+                {count > 0 && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md font-bold border bg-white text-[#0F172A] border-slate-200">{count}</span>}
               </button>
             ))}
           </div>
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs text-slate-400 flex items-center gap-1.5"><Clock size={12} />Buffer</span>
-              <strong className="text-xs text-indigo-600">30 min</strong>
+              <strong className="text-xs text-[#0F172A] font-black">30 min</strong>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs text-slate-400 flex items-center gap-1.5"><BarChart3 size={12} />Channels</span>
-              <strong className="text-xs text-slate-600">WA + Web</strong>
+              <strong className="text-xs text-slate-600 font-bold">WA + Web</strong>
             </div>
           </div>
         </aside>
@@ -441,51 +441,51 @@ export default function DashboardPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-5 gap-3 flex-shrink-0">
-            <div className="bg-white border border-indigo-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
-                <p className="text-xs text-slate-500 font-medium">Total Intakes</p>
-                <h3 className="text-2xl font-bold mt-0.5 text-indigo-700">{conversations.length}</h3>
+                <p className="text-xs text-slate-500 font-bold">Total Intakes</p>
+                <h3 className="text-2xl font-black mt-0.5 text-[#0F172A]">{conversations.length}</h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100">
-                <MessageSquare size={18} className="text-indigo-600" />
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <MessageSquare size={18} className="text-[#0F172A]" />
               </div>
             </div>
-            <div className="bg-white border border-emerald-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs bg-[#F4FEE5]/40">
               <div>
-                <p className="text-xs text-slate-500 font-medium">Confirmed Jobs</p>
-                <h3 className="text-2xl font-bold mt-0.5 text-emerald-700">{bookings.length}</h3>
+                <p className="text-xs text-slate-500 font-bold">Confirmed Jobs</p>
+                <h3 className="text-2xl font-black mt-0.5 text-[#0F172A]">{bookings.length}</h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100">
-                <CalendarDays size={18} className="text-emerald-600" />
-              </div>
-            </div>
-            <div className="bg-white border border-sky-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Total Earned</p>
-                <h3 className="text-2xl font-bold mt-0.5 text-sky-700">${paymentSummary.totalEarned.toFixed(2)}</h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.succeededCount} paid</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center border border-sky-100">
-                <DollarSign size={18} className="text-sky-600" />
-              </div>
-            </div>
-            <div className="bg-white border border-amber-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
-              <div>
-                <p className="text-xs text-slate-500 font-medium">Pending Payments</p>
-                <h3 className="text-2xl font-bold mt-0.5 text-amber-700">${paymentSummary.totalPending.toFixed(2)}</h3>
-                <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.pendingCount} awaiting</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100">
-                <TrendingUp size={18} className="text-amber-600" />
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-slate-200">
+                <CalendarDays size={18} className="text-[#0F172A]" />
               </div>
             </div>
             <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
-                <p className="text-xs text-slate-500 font-medium">Stripe Payouts</p>
-                <h3 className="text-sm font-bold mt-0.5 text-slate-700">{stripeStatus.onboardingComplete ? 'Active' : 'Not Setup'}</h3>
+                <p className="text-xs text-slate-500 font-bold">Total Earned</p>
+                <h3 className="text-2xl font-black mt-0.5 text-[#0F172A]">${paymentSummary.totalEarned.toFixed(2)}</h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.succeededCount} paid</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
-                <CreditCard size={18} className="text-slate-600" />
+                <DollarSign size={18} className="text-[#0F172A]" />
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+              <div>
+                <p className="text-xs text-slate-500 font-bold">Pending Payments</p>
+                <h3 className="text-2xl font-black mt-0.5 text-[#0F172A]">${paymentSummary.totalPending.toFixed(2)}</h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.pendingCount} awaiting</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <TrendingUp size={18} className="text-[#0F172A]" />
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs">
+              <div>
+                <p className="text-xs text-slate-500 font-bold">Stripe Payouts</p>
+                <h3 className="text-sm font-black mt-0.5 text-[#0F172A]">{stripeStatus.onboardingComplete ? 'Active' : 'Not Setup'}</h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <CreditCard size={18} className="text-[#0F172A]" />
               </div>
             </div>
           </div>
@@ -496,13 +496,13 @@ export default function DashboardPage() {
               <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
                 <div className="p-4 border-b border-slate-100 space-y-2 flex-shrink-0">
                   <div className="flex justify-between items-center">
-                    <h2 className="text-sm font-bold text-slate-700">Intake Queue</h2>
+                    <h2 className="text-sm font-black text-[#0F172A]">Intake Queue</h2>
                     <button
                       onClick={refreshAll}
                       disabled={isRefreshing}
-                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 transition cursor-pointer disabled:opacity-60"
+                      className="text-xs font-bold text-[#0F172A] hover:text-black flex items-center gap-1.5 transition cursor-pointer disabled:opacity-60"
                     >
-                      <RefreshCw size={12} className={isRefreshing ? "animate-spin text-indigo-600" : "transition-transform hover:rotate-180 duration-500"} />
+                      <RefreshCw size={12} className={isRefreshing ? "animate-spin text-[#0F172A]" : "transition-transform hover:rotate-180 duration-500"} />
                       {isRefreshing ? 'Refreshing...' : 'Refresh'}
                     </button>
                   </div>
@@ -520,7 +520,7 @@ export default function DashboardPage() {
                     const isWA = conv.channel === 'WHATSAPP';
                     return (
                       <div key={conv.id} onClick={() => setSelectedConversation(conv)}
-                        className={`w-full text-left p-3.5 transition-all cursor-pointer ${isSelected ? 'bg-indigo-50 border-l-2 border-indigo-600' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
+                        className={`w-full text-left p-3.5 transition-all cursor-pointer ${isSelected ? 'bg-[#F4FEE5] border-l-4 border-[#84EA00]' : 'hover:bg-slate-50 border-l-4 border-transparent'}`}>
                         <div className="flex justify-between items-start gap-2.5">
                           <div className="flex items-center gap-2.5 min-w-0">
                             <img
@@ -529,7 +529,7 @@ export default function DashboardPage() {
                               className="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0 shadow-xs"
                             />
                             <div className="min-w-0">
-                              <h4 className="font-semibold text-slate-800 text-xs truncate">{conv.customer.name}</h4>
+                              <h4 className="font-bold text-[#0F172A] text-xs truncate">{conv.customer.name}</h4>
                               <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">{conv.customer.phone}</p>
                             </div>
                           </div>
@@ -549,7 +549,7 @@ export default function DashboardPage() {
                           </div>
                         </div>
                         <div className="mt-2 flex items-center justify-between">
-                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 border ${isWA ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-indigo-50 text-indigo-600 border-indigo-200'}`}>
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 border ${isWA ? 'bg-[#F4FEE5] text-[#0F172A] border-[#84EA00]' : 'bg-slate-100 text-[#0F172A] border-slate-200'}`}>
                             <MessageSquare size={10} /> {isWA ? 'WhatsApp' : 'Web Chat'}
                           </span>
                           <span className="text-slate-400 text-[10px]">{conv.messages.length} msgs</span>
@@ -571,28 +571,28 @@ export default function DashboardPage() {
                           className="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-xs"
                         />
                         <div>
-                          <h3 className="text-sm font-bold text-slate-800">{selectedConversation.customer.name}</h3>
+                          <h3 className="text-sm font-black text-[#0F172A]">{selectedConversation.customer.name}</h3>
                           <p className="text-[11px] text-slate-400 font-mono">{selectedConversation.customer.phone} - {selectedConversation.channel}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] px-2.5 py-1 rounded-lg font-bold bg-slate-100 text-slate-600 border border-slate-200">{selectedConversation.status}</span>
+                      <span className="text-[10px] px-2.5 py-1 rounded-lg font-bold bg-slate-100 text-[#0F172A] border border-slate-200">{selectedConversation.status}</span>
                     </div>
 
                     {selectedConversation.bookings && selectedConversation.bookings.length > 0 && (
-                      <div className="bg-indigo-50/70 p-3 border-b border-indigo-100 flex-shrink-0 space-y-2">
-                        <p className="text-[10px] font-bold text-indigo-700 uppercase tracking-widest px-1 flex items-center gap-1.5"><CalendarDays size={11} /> Bookings</p>
+                      <div className="bg-[#F4FEE5] p-3 border-b border-[#84EA00]/30 flex-shrink-0 space-y-2">
+                        <p className="text-[10px] font-black text-[#0F172A] uppercase tracking-widest px-1 flex items-center gap-1.5"><CalendarDays size={11} className="text-[#0F172A]" /> Bookings</p>
                         {selectedConversation.bookings.map(b => (
-                          <div key={b.id} className="rounded-2xl bg-white border border-indigo-100 shadow-xs overflow-hidden">
-                            <div className="flex items-center justify-between px-4 py-2 bg-indigo-600 text-white">
+                          <div key={b.id} className="rounded-2xl bg-white border border-[#84EA00]/40 shadow-xs overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-2 bg-[#0F172A] text-white">
                               <div className="flex items-center gap-2">
-                                <CheckCircle size={13} />
+                                <CheckCircle size={13} className="text-[#84EA00]" />
                                 <span className="text-xs font-bold">Booking Confirmed</span>
                               </div>
                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                                b.status === 'CONFIRMED' ? 'bg-emerald-400/30 text-emerald-100' :
-                                b.status === 'COMPLETED' ? 'bg-sky-400/30 text-sky-100' :
-                                b.status === 'CANCELLED' ? 'bg-red-400/30 text-red-100' :
-                                'bg-amber-400/30 text-amber-100'
+                                b.status === 'CONFIRMED' ? 'bg-[#84EA00] text-[#0F172A]' :
+                                b.status === 'COMPLETED' ? 'bg-slate-700 text-white' :
+                                b.status === 'CANCELLED' ? 'bg-red-500 text-white' :
+                                'bg-amber-400 text-[#0F172A]'
                               }`}>{b.status}</span>
                             </div>
                             <div className="px-4 py-3 flex justify-between items-center gap-3">
@@ -602,12 +602,12 @@ export default function DashboardPage() {
                                   <span>{new Date(b.slotStart).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                  <CreditCard size={11} className="text-indigo-400" />
-                                  <span>Fee: <strong className="text-slate-800">${b.bookingFee}</strong></span>
+                                  <CreditCard size={11} className="text-[#0F172A]" />
+                                  <span>Fee: <strong className="text-[#0F172A]">${b.bookingFee}</strong></span>
                                 </div>
                               </div>
                               <button onClick={() => handleGeneratePaymentLink(b.id)} disabled={generatingPayment === b.id}
-                                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer">
+                                className="bg-[#0F172A] hover:bg-[#1E293B] text-[#84EA00] text-xs font-black px-3 py-2 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer">
                                 <CreditCard size={12} /> {generatingPayment === b.id ? 'Generating...' : 'Send Stripe Link'}
                               </button>
                             </div>
@@ -623,7 +623,7 @@ export default function DashboardPage() {
                         const isCustomer = msg.sender === 'CUSTOMER';
                         if (msg.sender === 'SYSTEM') return (
                           <div key={msg.id} className="flex justify-center">
-                            <span className="text-[10px] text-slate-400 bg-white border border-slate-200 px-3 py-1 rounded-full">{msg.content}</span>
+                            <span className="text-[10px] text-slate-500 bg-white border border-slate-200 px-3 py-1 rounded-full font-medium">{msg.content}</span>
                           </div>
                         );
                         return (
@@ -636,13 +636,13 @@ export default function DashboardPage() {
                               />
                             )}
                             <div className={`max-w-sm px-4 py-2.5 rounded-2xl text-xs leading-relaxed ${
-                              isCustomer ? 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-xs' : 'bg-indigo-600 text-white rounded-br-none shadow-xs'
+                              isCustomer ? 'bg-white border border-slate-200 text-[#0F172A] rounded-bl-none shadow-xs' : 'bg-[#0F172A] text-white rounded-br-none shadow-xs'
                             }`}>
                               <p className="whitespace-pre-wrap">{msg.content}</p>
                               {msg.sentAt && <span className="text-[9px] opacity-50 block text-right mt-1">{new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>}
                             </div>
                             {!isCustomer && (
-                              <div className="w-6 h-6 rounded-full bg-indigo-700 text-white flex items-center justify-center text-[9px] font-bold shadow-xs flex-shrink-0 mb-0.5">
+                              <div className="w-6 h-6 rounded-full bg-[#1E293B] text-[#84EA00] flex items-center justify-center text-[9px] font-black shadow-xs flex-shrink-0 mb-0.5">
                                 You
                               </div>
                             )}
@@ -658,28 +658,28 @@ export default function DashboardPage() {
                         className={inputCls}
                         disabled={sendingMessage} />
                       <button onClick={handleSendMessage} disabled={sendingMessage || !replyContent.trim()}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5 transition cursor-pointer shadow-xs">
+                        className="bg-[#0F172A] hover:bg-[#1E293B] text-[#84EA00] px-4 py-2.5 rounded-xl text-xs font-black disabled:opacity-40 flex items-center gap-1.5 transition cursor-pointer shadow-xs">
                         <Send size={13} /> Send
                       </button>
                     </div>
 
                     <div className="p-3 border-t border-slate-100 bg-white flex gap-2 flex-shrink-0">
                       <button onClick={() => { handleFetchSlots(); setShowSlotsModal(true); }}
-                        className="flex-1 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 hover:bg-slate-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                        <Search size={13} className="text-rose-600" /> Check Slots
+                        className="flex-1 py-2 bg-[#84EA00] hover:bg-[#74D100] text-[#0F172A] rounded-xl text-xs font-black border border-[#84EA00] transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
+                        <Search size={13} className="text-[#0F172A]" /> Check Slots
                       </button>
                       <button onClick={() => { setBookingError(''); setShowBookingModal(true); }}
-                        className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
-                        <Plus size={13} /> Create Booking
+                        className="flex-1 py-2 bg-[#0F172A] hover:bg-[#1E293B] text-white rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
+                        <Plus size={13} className="text-[#84EA00]" /> Create Booking
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center flex flex-col items-center justify-center h-full space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                      <MessageSquare size={20} className="text-indigo-600" />
+                    <div className="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                      <MessageSquare size={20} className="text-[#0F172A]" />
                     </div>
-                    <h3 className="text-sm font-bold text-slate-700">Select a Conversation</h3>
+                    <h3 className="text-sm font-black text-[#0F172A]">Select a Conversation</h3>
                     <p className="text-slate-400 text-xs max-w-xs">Click any conversation from the queue to reply or send payment links.</p>
                   </div>
                 )}
@@ -795,12 +795,12 @@ export default function DashboardPage() {
             <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col p-5 min-h-0">
               <div className="flex flex-wrap justify-between items-center gap-4 border-b border-slate-100 pb-4 flex-shrink-0">
                 <div>
-                  <h2 className="text-sm font-bold text-slate-800">Work Area Zones</h2>
+                  <h2 className="text-sm font-black text-[#0F172A]">Work Area Zones</h2>
                   <p className="text-xs text-slate-400 mt-0.5">Daily service coverage zones for slot availability</p>
                 </div>
                 <button onClick={() => setShowWorkAreaModal(true)}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer">
-                  <Plus size={14} /> Add Zone
+                  className="bg-[#0F172A] hover:bg-[#1E293B] text-[#84EA00] px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-xs cursor-pointer">
+                  <Plus size={14} className="text-[#84EA00]" /> Add Zone
                 </button>
               </div>
               <div className="overflow-y-auto flex-1 mt-4">
@@ -808,17 +808,17 @@ export default function DashboardPage() {
                   {workAreas.length === 0 ? (
                     <div className="col-span-3 text-center py-10 text-slate-400 text-xs">No work areas configured yet.</div>
                   ) : workAreas.map(wa => (
-                    <div key={wa.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-indigo-300 hover:shadow-md transition-all">
+                    <div key={wa.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-[#0F172A] hover:shadow-md transition-all">
                       <button onClick={() => handleDeleteWorkArea(wa.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition cursor-pointer">
                         <Trash2 size={13} />
                       </button>
-                      <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
-                        <MapPin size={18} className="text-indigo-600" />
+                      <div className="w-9 h-9 rounded-xl bg-[#F4FEE5] flex items-center justify-center border border-[#84EA00]/40">
+                        <MapPin size={18} className="text-[#0F172A]" />
                       </div>
-                      <h3 className="font-bold text-slate-800 text-sm">{wa.area}</h3>
+                      <h3 className="font-black text-[#0F172A] text-sm">{wa.area}</h3>
                       <p className="text-xs text-slate-400">{new Date(wa.availableDate).toLocaleDateString()}</p>
-                      <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        <CheckCircle size={10} /> Active Zone
+                      <span className="inline-flex items-center gap-1 bg-[#F4FEE5] text-[#0F172A] border border-[#84EA00] text-[10px] font-black px-2 py-0.5 rounded-full">
+                        <CheckCircle size={10} className="text-[#0F172A]" /> Active Zone
                       </span>
                     </div>
                   ))}
@@ -831,36 +831,36 @@ export default function DashboardPage() {
 
       {/* CREATE BOOKING MODAL */}
       {showBookingModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-slate-800">
+        <div className="fixed inset-0 bg-[#0F172A]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4 text-[#0F172A]">
+            <h3 className="text-base font-black text-[#0F172A]">
               Create Booking {selectedConversation ? 'for ' + selectedConversation.customer.name : ''}
             </h3>
             {bookingError && <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl">{bookingError}</div>}
             <form onSubmit={handleCreateBooking} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Booking Date</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Booking Date</label>
                 <DatePicker value={bookingDate} onChange={setBookingDate} placeholder="Select booking date" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">Start Time</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Start Time</label>
                   <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)} className={inputCls} required />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">End Time</label>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">End Time</label>
                   <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} className={inputCls} required />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Booking Fee ($)</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Booking Fee ($)</label>
                 <input type="number" step="0.01" value={bookingFee} onChange={e => setBookingFee(e.target.value)} className={inputCls} required />
               </div>
               <div className="flex justify-end gap-3 pt-1">
                 <button type="button" onClick={() => setShowBookingModal(false)}
-                  className="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50">Cancel</button>
+                  className="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50 cursor-pointer">Cancel</button>
                 <button type="submit" disabled={creatingBooking}
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold disabled:opacity-50">
+                  className="px-5 py-2.5 bg-[#84EA00] hover:bg-[#74D100] text-[#0F172A] rounded-xl text-xs font-black disabled:opacity-50 transition shadow-sm cursor-pointer border border-[#84EA00]">
                   {creatingBooking ? 'Creating...' : 'Confirm Booking'}
                 </button>
               </div>
@@ -893,24 +893,24 @@ export default function DashboardPage() {
 
       {/* WORK AREA MODAL */}
       {showWorkAreaModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-slate-800">Set Work Area Zone</h3>
-            {workAreaMessage && <p className="text-xs font-semibold text-indigo-600">{workAreaMessage}</p>}
+        <div className="fixed inset-0 bg-[#0F172A]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4 text-[#0F172A]">
+            <h3 className="text-base font-black text-[#0F172A]">Set Work Area Zone</h3>
+            {workAreaMessage && <p className="text-xs font-bold text-[#0F172A]">{workAreaMessage}</p>}
             <form onSubmit={handleSetWorkArea} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Available Date</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Available Date</label>
                 <DatePicker value={workAreaDate} onChange={setWorkAreaDate} placeholder="Select zone date" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Area / Location Name</label>
+                <label className="block text-xs font-bold text-slate-700 mb-1">Area / Location Name</label>
                 <input type="text" placeholder="e.g. North London, Camden" value={workAreaName} onChange={e => setWorkAreaName(e.target.value)} className={inputCls} required />
               </div>
               <div className="flex justify-end gap-3 pt-1">
                 <button type="button" onClick={() => setShowWorkAreaModal(false)}
-                  className="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50">Close</button>
+                  className="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50 cursor-pointer">Close</button>
                 <button type="submit" disabled={settingWorkArea}
-                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50">
+                  className="px-5 py-2.5 bg-[#84EA00] hover:bg-[#74D100] text-[#0F172A] rounded-xl text-xs font-black disabled:opacity-50 transition shadow-sm cursor-pointer border border-[#84EA00]">
                   {settingWorkArea ? 'Saving...' : 'Save Zone'}
                 </button>
               </div>

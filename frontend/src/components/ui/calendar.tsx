@@ -22,13 +22,13 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-3",
         month_caption: "flex justify-between pt-1 relative items-center px-1 mb-2",
-        caption_label: "text-sm font-bold text-slate-800",
+        caption_label: "text-sm font-bold text-[#0F172A]",
         nav: "space-x-1 flex items-center",
         button_previous: cn(
-          "h-7 w-7 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg p-0 flex items-center justify-center transition absolute right-9"
+          "h-7 w-7 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg p-0 flex items-center justify-center transition absolute right-9 cursor-pointer"
         ),
         button_next: cn(
-          "h-7 w-7 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg p-0 flex items-center justify-center transition absolute right-1"
+          "h-7 w-7 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg p-0 flex items-center justify-center transition absolute right-1 cursor-pointer"
         ),
         month_grid: "w-full border-collapse space-y-1",
         weekdays: "flex w-full mb-1",
@@ -37,24 +37,24 @@ function Calendar({
         week: "flex w-full mt-1",
         day: "h-9 w-9 text-center text-sm p-0 relative flex items-center justify-center",
         day_button: cn(
-          "h-8 w-8 p-0 font-medium text-xs text-slate-700 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition flex items-center justify-center cursor-pointer"
+          "h-8 w-8 p-0 font-medium text-xs text-slate-700 rounded-xl hover:bg-[#F4FEE5] hover:text-[#0F172A] transition flex items-center justify-center cursor-pointer"
         ),
         range_end: "range-end",
         selected:
-          "bg-indigo-600 text-white font-bold hover:bg-indigo-700 hover:text-white rounded-xl shadow-sm shadow-indigo-200",
-        today: "bg-slate-100 text-slate-900 font-bold border border-slate-300",
+          "bg-[#0F172A] text-[#84EA00] font-bold hover:bg-[#1E293B] hover:text-[#84EA00] rounded-xl shadow-sm",
+        today: "bg-[#F4FEE5] text-[#0F172A] font-bold border border-[#84EA00]",
         outside: "text-slate-300 opacity-50",
         disabled: "text-slate-300 opacity-40 cursor-not-allowed",
-        range_middle: "aria-selected:bg-indigo-50 aria-selected:text-indigo-700",
+        range_middle: "aria-selected:bg-[#F4FEE5] aria-selected:text-[#0F172A]",
         hidden: "invisible",
         ...classNames,
       }}
       components={{
         Chevron: ({ orientation }) => {
           if (orientation === "left") {
-            return <ChevronLeft className="h-4 w-4" />
+            return <ChevronLeft className="h-4 w-4 text-[#0F172A]" />
           }
-          return <ChevronRight className="h-4 w-4" />
+          return <ChevronRight className="h-4 w-4 text-[#0F172A]" />
         },
       }}
       {...props}

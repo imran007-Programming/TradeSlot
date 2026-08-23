@@ -5,18 +5,22 @@
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
   
-  /* Fixed Brand Tokens */
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: #eef2ff;
+  /* Primary: Deep Navy Blue */
+  --primary: #0f172a;
+  --primary-hover: #1e293b;
+  --primary-light: #f8fafc;
   
-  --secondary: #10b981;
-  --secondary-hover: #059669;
-  --secondary-light: #ecfdf5;
+  /* Secondary: Electric Lime Green */
+  --secondary: #84ea00;
+  --secondary-hover: #74d100;
+  --secondary-light: #f4fee5;
 
-  --accent: #e11d48;
-  --accent-hover: #be123c;
-  --accent-light: #fff1f2;
+  /* Custom Color Tokens */
+  --navy: #0f172a;
+  --navy-dark: #0a1120;
+  --lime: #84ea00;
+  --lime-hover: #74d100;
+  --lime-light: #f4fee5;
 
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -30,7 +34,7 @@
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 243.4 75.4% 58.6%;
+  --ring: 222.2 47.6% 11.2%;
   --radius: 0.75rem;
 }
 
@@ -60,8 +64,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-card:hover {
-  border-color: var(--primary);
-  box-shadow: 0 10px 25px -3px rgba(79, 70, 229, 0.12);
+  border-color: #0f172a;
+  box-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.08);
 }
 
 .glass-input {
@@ -72,8 +76,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+  border-color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(132, 234, 0, 0.25);
 }
 
 /* Custom scrollbars */
@@ -95,18 +99,11 @@ h1, h2, h3, h4, h5, h6 {
   background: #94a3b8;
 }
 
-/* Gradient text */
-.text-gradient {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #d946ef 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Glow effects */
+.glow-lime {
+  box-shadow: 0 15px 35px -10px rgba(132, 234, 0, 0.4);
 }
 
-/* Soft Glow effects */
-.glow-primary {
-  box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.18);
-}
-
-.glow-secondary {
-  box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.18);
+.glow-navy {
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.25);
 }

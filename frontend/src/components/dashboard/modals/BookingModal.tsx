@@ -18,7 +18,7 @@ interface Props {
   onClose: () => void;
 }
 
-const inputCls = "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
+const inputCls = "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#0F172A] focus:ring-2 focus:ring-[#84EA00]/30";
 
 export default function BookingModal({
   customerName,
@@ -36,15 +36,15 @@ export default function BookingModal({
   onClose,
 }: Props) {
   return (
-    <div className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 text-slate-800">
+    <div className="fixed inset-0 bg-[#0F172A]/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 text-[#0F172A]">
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-          <h3 className="text-base font-bold text-slate-800">
+          <h3 className="text-base font-black text-[#0F172A]">
             Create Booking {customerName ? `for ${customerName}` : ''}
           </h3>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 bg-slate-100 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition cursor-pointer"
+            className="text-slate-400 hover:text-[#0F172A] bg-slate-100 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition cursor-pointer"
           >
             ✕
           </button>
@@ -58,13 +58,13 @@ export default function BookingModal({
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Booking Date</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Booking Date</label>
             <DatePicker value={bookingDate} onChange={onBookingDateChange} placeholder="Select booking date" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">Start Time</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Start Time</label>
               <input
                 type="time"
                 value={startTime}
@@ -74,7 +74,7 @@ export default function BookingModal({
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">End Time</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">End Time</label>
               <input
                 type="time"
                 value={endTime}
@@ -86,7 +86,7 @@ export default function BookingModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Booking Fee ($)</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">Booking Fee ($)</label>
             <input
               type="number"
               step="0.01"
@@ -108,7 +108,7 @@ export default function BookingModal({
             <button
               type="submit"
               disabled={creatingBooking}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 transition shadow-sm cursor-pointer"
+              className="px-5 py-2.5 bg-[#84EA00] hover:bg-[#74D100] text-[#0F172A] rounded-xl text-xs font-black disabled:opacity-50 transition shadow-md shadow-[#84EA00]/20 cursor-pointer"
             >
               {creatingBooking ? 'Creating...' : 'Confirm Booking'}
             </button>

@@ -31,7 +31,7 @@ export default function CustomersTab({ customers }: Props) {
       <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold">
+            <tr className="bg-slate-50 border-b border-slate-200 text-[#0F172A] font-bold">
               <th className="p-3">Customer</th>
               <th className="p-3">Channel</th>
               <th className="p-3">Phone Number</th>
@@ -42,7 +42,7 @@ export default function CustomersTab({ customers }: Props) {
           <tbody className="divide-y divide-slate-100">
             {customers.map((cust) => (
               <tr key={cust.id} className="hover:bg-slate-50/80 transition-colors">
-                <td className="p-3 font-bold text-slate-800 flex items-center gap-2">
+                <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
                   <img
                     src="/images.png"
                     alt={cust.name}
@@ -54,8 +54,8 @@ export default function CustomersTab({ customers }: Props) {
                   <span
                     className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold border ${
                       cust.channel === 'WHATSAPP'
-                        ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
-                        : 'bg-indigo-50 text-indigo-600 border-indigo-200'
+                        ? 'bg-[#F4FEE5] text-[#0F172A] border-[#84EA00]'
+                        : 'bg-slate-100 text-[#0F172A] border-slate-200'
                     }`}
                   >
                     {cust.channel}
@@ -63,14 +63,14 @@ export default function CustomersTab({ customers }: Props) {
                 </td>
                 <td className="p-3 font-mono text-slate-500">{cust.phone}</td>
                 <td className="p-3 text-slate-600">
-                  <span className="inline-flex items-center gap-1 font-semibold">
-                    <MessageSquare size={11} className="text-indigo-500" />
+                  <span className="inline-flex items-center gap-1 font-bold text-[#0F172A]">
+                    <MessageSquare size={11} className="text-[#0F172A]" />
                     {cust.totalMessages}
                   </span>
                 </td>
                 <td className="p-3 text-slate-600">
-                  <span className="inline-flex items-center gap-1 font-semibold">
-                    <CalendarDays size={11} className="text-emerald-500" />
+                  <span className="inline-flex items-center gap-1 font-bold text-[#0F172A]">
+                    <CalendarDays size={11} className="text-[#84EA00]" />
                     {cust.bookingsCount}
                   </span>
                 </td>
