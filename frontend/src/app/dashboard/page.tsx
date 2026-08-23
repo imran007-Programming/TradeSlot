@@ -56,6 +56,7 @@ export default function DashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [workAreas, setWorkAreas] = useState<WorkArea[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [user, setUser] = useState<any>(null);
   const [stripeStatus, setStripeStatus] = useState<{ connected: boolean; onboardingComplete: boolean }>({ connected: false, onboardingComplete: false });
@@ -108,7 +109,12 @@ export default function DashboardPage() {
   }, [router]);
 
   const refreshAll = async () => {
-    await Promise.all([fetchConversations(), fetchBookings(), fetchWorkAreas(), checkStripe(), fetchPaymentSummary()]);
+    setIsRefreshing(true);
+    try {
+      await Promise.all([fetchConversations(), fetchBookings(), fetchWorkAreas(), checkStripe(), fetchPaymentSummary()]);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
   };
 
   const fetchPaymentSummary = async () => {
@@ -340,8 +346,12 @@ export default function DashboardPage() {
               <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5">
                 <CreditCard size={13} /> Stripe Active
               </span>
-              <button onClick={handleResetStripe} className="bg-slate-100 border border-slate-200 hover:border-red-300 text-slate-500 hover:text-red-500 px-2 py-1.5 rounded-lg transition" title="Reset Stripe">
-                <RefreshCw size={13} />
+              <button
+                onClick={handleResetStripe}
+                className="bg-slate-100 border border-slate-200 hover:border-red-300 text-slate-500 hover:text-red-500 px-2 py-1.5 rounded-lg transition cursor-pointer group"
+                title="Reset Stripe"
+              >
+                <RefreshCw size={13} className="transition-transform group-hover:rotate-180 duration-500" />
               </button>
             </div>
           ) : (
@@ -446,8 +456,13 @@ export default function DashboardPage() {
                 <div className="p-4 border-b border-slate-100 space-y-2 flex-shrink-0">
                   <div className="flex justify-between items-center">
                     <h2 className="text-sm font-bold text-slate-700">Intake Queue</h2>
-                    <button onClick={refreshAll} className="text-xs font-semibold text-violet-600 hover:text-violet-700 flex items-center gap-1">
-                      <RefreshCw size={12} /> Refresh
+                    <button
+                      onClick={refreshAll}
+                      disabled={isRefreshing}
+                      className="text-xs font-semibold text-violet-600 hover:text-violet-700 flex items-center gap-1.5 transition cursor-pointer disabled:opacity-60"
+                    >
+                      <RefreshCw size={12} className={isRefreshing ? "animate-spin text-violet-600" : "transition-transform hover:rotate-180 duration-500"} />
+                      {isRefreshing ? 'Refreshing...' : 'Refresh'}
                     </button>
                   </div>
                   <div className="relative">

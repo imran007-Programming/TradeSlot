@@ -18,8 +18,8 @@ export default function ConversationList({ conversations, selectedId, searchTerm
       <div className="p-4 border-b border-slate-100 space-y-2 flex-shrink-0">
         <div className="flex justify-between items-center">
           <h2 className="text-sm font-bold text-slate-700">Intake Queue</h2>
-          <button onClick={onRefresh} className="text-xs font-semibold text-violet-600 hover:text-violet-700 flex items-center gap-1">
-            <RefreshCw size={12} /> Refresh
+          <button onClick={onRefresh} className="text-xs font-semibold text-violet-600 hover:text-violet-700 flex items-center gap-1.5 transition cursor-pointer group">
+            <RefreshCw size={12} className="transition-transform group-hover:rotate-180 duration-500" /> Refresh
           </button>
         </div>
         <div className="relative">
