@@ -158,7 +158,14 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
           const isPayment = msg.content.toLowerCase().includes('payment link') || !!url;
 
           return (
-            <div key={msg.id} className={`flex ${isCustomer ? 'justify-end' : 'justify-start'}`}>
+            <div key={msg.id} className={`flex items-end gap-2 ${isCustomer ? 'justify-end' : 'justify-start'}`}>
+              {!isCustomer && (
+                <img
+                  src="/images.png"
+                  alt="Trader Avatar"
+                  className="w-6 h-6 rounded-full object-cover border border-slate-700 shadow-xs flex-shrink-0 mb-0.5"
+                />
+              )}
               <div
                 className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-lg break-words text-xs leading-relaxed ${
                   isCustomer

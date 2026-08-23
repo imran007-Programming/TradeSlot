@@ -480,10 +480,17 @@ export default function DashboardPage() {
                     return (
                       <div key={conv.id} onClick={() => setSelectedConversation(conv)}
                         className={`w-full text-left p-3.5 transition-all cursor-pointer ${isSelected ? 'bg-violet-50 border-l-2 border-violet-500' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-semibold text-slate-800 text-xs">{conv.customer.name}</h4>
-                            <p className="text-[11px] text-slate-400 font-mono mt-0.5">{conv.customer.phone}</p>
+                        <div className="flex justify-between items-start gap-2.5">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img
+                              src="/images.png"
+                              alt={conv.customer.name}
+                              className="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0 shadow-xs"
+                            />
+                            <div className="min-w-0">
+                              <h4 className="font-semibold text-slate-800 text-xs truncate">{conv.customer.name}</h4>
+                              <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">{conv.customer.phone}</p>
+                            </div>
                           </div>
                           <div className="flex items-center gap-1">
                             <select value={conv.status}
@@ -516,9 +523,16 @@ export default function DashboardPage() {
                 {selectedConversation ? (
                   <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col h-full overflow-hidden">
                     <div className="p-4 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
-                      <div>
-                        <h3 className="text-sm font-bold text-slate-800">{selectedConversation.customer.name}</h3>
-                        <p className="text-[11px] text-slate-400 font-mono">{selectedConversation.customer.phone} - {selectedConversation.channel}</p>
+                      <div className="flex items-center gap-3">
+                        <img
+                          src="/images.png"
+                          alt={selectedConversation.customer.name}
+                          className="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-xs"
+                        />
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-800">{selectedConversation.customer.name}</h3>
+                          <p className="text-[11px] text-slate-400 font-mono">{selectedConversation.customer.phone} - {selectedConversation.channel}</p>
+                        </div>
                       </div>
                       <span className="text-[10px] px-2.5 py-1 rounded-lg font-bold bg-slate-100 text-slate-600 border border-slate-200">{selectedConversation.status}</span>
                     </div>
@@ -572,13 +586,25 @@ export default function DashboardPage() {
                           </div>
                         );
                         return (
-                          <div key={msg.id} className={`flex ${isCustomer ? 'justify-start' : 'justify-end'}`}>
+                          <div key={msg.id} className={`flex items-end gap-2 ${isCustomer ? 'justify-start' : 'justify-end'}`}>
+                            {isCustomer && (
+                              <img
+                                src="/images.png"
+                                alt="Customer"
+                                className="w-6 h-6 rounded-full object-cover border border-slate-200 shadow-xs flex-shrink-0 mb-0.5"
+                              />
+                            )}
                             <div className={`max-w-sm px-4 py-2.5 rounded-2xl text-xs leading-relaxed ${
-                              isCustomer ? 'bg-white border border-slate-200 text-slate-700 rounded-bl-none' : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-br-none'
+                              isCustomer ? 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-xs' : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-br-none shadow-sm shadow-violet-200'
                             }`}>
                               <p className="whitespace-pre-wrap">{msg.content}</p>
                               {msg.sentAt && <span className="text-[9px] opacity-50 block text-right mt-1">{new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>}
                             </div>
+                            {!isCustomer && (
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 text-white flex items-center justify-center text-[9px] font-bold shadow-xs flex-shrink-0 mb-0.5">
+                                You
+                              </div>
+                            )}
                           </div>
                         );
                       })}

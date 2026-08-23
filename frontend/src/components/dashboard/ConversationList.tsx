@@ -37,10 +37,17 @@ export default function ConversationList({ conversations, selectedId, searchTerm
           return (
             <button key={conv.id} onClick={() => onSelect(conv)}
               className={`w-full text-left p-3.5 transition-all ${isSelected ? 'bg-violet-50 border-l-2 border-violet-500' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="font-semibold text-slate-800 text-xs">{conv.customer.name}</h4>
-                  <p className="text-[11px] text-slate-400 font-mono mt-0.5">{conv.customer.phone}</p>
+              <div className="flex justify-between items-start gap-2.5">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <img
+                    src="/images.png"
+                    alt={conv.customer.name}
+                    className="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0 shadow-xs"
+                  />
+                  <div className="min-w-0">
+                    <h4 className="font-semibold text-slate-800 text-xs truncate">{conv.customer.name}</h4>
+                    <p className="text-[11px] text-slate-400 font-mono mt-0.5 truncate">{conv.customer.phone}</p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <select value={conv.status}

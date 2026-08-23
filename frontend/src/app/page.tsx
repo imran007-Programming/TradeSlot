@@ -9,6 +9,7 @@ export default function Home() {
   const [showChat, setShowChat] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [showChatOptions, setShowChatOptions] = useState(false);
 
   const trades = [
     {
@@ -380,24 +381,55 @@ export default function Home() {
         />
       )}
 
-      {/* Floating Action Bar */}
+      {/* Backdrop to close options on outside click */}
+      {showChatOptions && (
+        <div className="fixed inset-0 z-30" onClick={() => setShowChatOptions(false)} />
+      )}
+
+      {/* Floating Chat Launcher */}
       {!showChat && (
-        <div className="fixed bottom-6 right-6 flex flex-col sm:flex-row gap-3 z-40">
-          <a
-            href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801700000000'}?text=Hello%20TradeSlot%2C%20I%20need%20a%20tradesperson%20booking%21`}
-            target="_blank"
-            rel="noreferrer"
-            className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl px-4 py-3 shadow-2xl hover:scale-105 transition-all text-xs font-bold flex items-center space-x-2 border border-emerald-400/40"
-          >
-            <span className="text-base">💬</span>
-            <span>WhatsApp Chat</span>
-          </a>
+        <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+
+          {/* Options popup */}
+          {showChatOptions && (
+            <div className="flex flex-col gap-2 mb-1 animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <a
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '8801700000000'}?text=Hello%20TradeSlot%2C%20I%20need%20a%20tradesperson%20booking%21`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setShowChatOptions(false)}
+                className="flex items-center gap-3 bg-white border border-slate-200 shadow-xl rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 hover:border-emerald-400 hover:shadow-emerald-100 transition-all group"
+              >
+                <span className="w-8 h-8 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-base shadow-md group-hover:scale-110 transition-transform">💬</span>
+                <div>
+                  <p className="font-bold text-slate-800">Chat via WhatsApp</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Opens WhatsApp directly</p>
+                </div>
+              </a>
+              <button
+                onClick={() => { setShowChatOptions(false); setShowChat(true); }}
+                className="flex items-center gap-3 bg-white border border-slate-200 shadow-xl rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 hover:border-indigo-400 hover:shadow-indigo-100 transition-all group"
+              >
+                <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-base shadow-md group-hover:scale-110 transition-transform">🌐</span>
+                <div className="text-left">
+                  <p className="font-bold text-slate-800">Live Web Chat</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Chat right here on site</p>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Avatar button */}
           <button
-            onClick={() => setShowChat(true)}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl px-4 py-3 shadow-2xl glow-primary hover:scale-105 transition-all text-xs font-bold flex items-center space-x-2 border border-indigo-400/40"
+            onClick={() => setShowChatOptions(prev => !prev)}
+            className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 shadow-2xl shadow-indigo-500/40 hover:scale-110 transition-transform flex items-center justify-center border-2 border-white"
           >
-            <span className="text-base">🌐</span>
-            <span>Live Web Chat</span>
+            <span className="text-2xl">⚡</span>
+            {/* Blinking green dot */}
+            <span className="absolute top-0.5 right-0.5 flex h-3.5 w-3.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-white" />
+            </span>
           </button>
         </div>
       )}
