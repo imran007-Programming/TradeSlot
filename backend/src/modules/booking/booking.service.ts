@@ -268,6 +268,7 @@ export const getAvailableSlots = async (
   workEnd.setHours(17, 0, 0, 0);
 
   let currentSlot = new Date(workStart);
+  const now = new Date();
 
   while (
     currentSlot.getTime() + durationMinutes * 60000 <=
@@ -280,7 +281,10 @@ export const getAvailableSlots = async (
       slotEnd.getTime() + TRAVEL_BUFFER_MINUTES * 60000
     );
 
-    const isAvailable = !bookings.some((booking) => {
+    // If slot has already passed in real-time, it cannot be booked
+    const isPast = currentSlot.getTime() <= now.getTime();
+
+    const isAvailable = !isPast && !bookings.some((booking) => {
       const bookingWithBuffer = new Date(
         booking.slotEnd.getTime() + TRAVEL_BUFFER_MINUTES * 60000
       );
