@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { handleWebChatMessage, getWebChatMessages } from "./webchat.service";
+import { handleWebChatMessage, getWebChatMessages, confirmWebChatBooking } from "./webchat.service";
 import { sendResponse } from "../../../utils/response";
 import { AppError } from "../../../utils/Apperror";
 
@@ -51,6 +51,31 @@ export const getWebChatMessagesController = async (
       message: "Messages retrieved successfully",
       statusCode: 200,
       data: messages,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const confirmWebChatBookingController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { bookingId, phone } = req.body;
+
+    if (!bookingId) {
+      throw new AppError(400, "Booking ID is required");
+    }
+
+    const result = await confirmWebChatBooking(bookingId, phone);
+
+    return sendResponse(res, {
+      success: true,
+      message: "Booking confirmed successfully by customer",
+      statusCode: 200,
+      data: result,
     });
   } catch (error) {
     next(error);

@@ -46,9 +46,7 @@ export const createBooking = async (data: ICreateBooking) => {
   const existingBooking = await prisma.booking.findFirst({
     where: {
       traderId,
-      status: {
-        in: ["CONFIRMED", "PENDING"],
-      },
+      status: "CONFIRMED",
       slotStart: {
         lt: new Date(end.getTime() + bufferMinutes * 60000),
       },
@@ -92,9 +90,33 @@ export const getBookings = async (userId: string) => {
     throw new AppError(404, "Trader not found");
   }
 
+  // Auto-clean any lingering PENDING proposals if a customer already has a CONFIRMED booking
+  const confirmedBookings = await prisma.booking.findMany({
+    where: {
+      traderId: trader.id,
+      status: "CONFIRMED",
+    },
+    select: { customerId: true },
+  });
+  const confirmedCustomerIds = confirmedBookings.map((b) => b.customerId);
+
+  if (confirmedCustomerIds.length > 0) {
+    await prisma.booking.updateMany({
+      where: {
+        traderId: trader.id,
+        customerId: { in: confirmedCustomerIds },
+        status: "PENDING",
+      },
+      data: {
+        status: "CANCELLED",
+      },
+    });
+  }
+
   const bookings = await prisma.booking.findMany({
     where: {
       traderId: trader.id,
+      status: { not: "CANCELLED" },
     },
     include: {
       customer: true,
@@ -235,10 +257,15 @@ export const getAvailableSlots = async (
     throw new AppError(404, "Trader not found");
   }
 
+  const dayStart = new Date(date);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(date);
+  dayEnd.setHours(23, 59, 59, 999);
+
   const workArea = await prisma.workArea.findFirst({
     where: {
       traderId,
-      availableDate: date,
+      availableDate: { gte: dayStart, lte: dayEnd },
     },
   });
 
@@ -246,15 +273,10 @@ export const getAvailableSlots = async (
     throw new AppError(400, "No work area set for this date");
   }
 
-  const dayStart = new Date(date);
-  dayStart.setHours(0, 0, 0, 0);
-  const dayEnd = new Date(date);
-  dayEnd.setHours(23, 59, 59, 999);
-
   const bookings = await prisma.booking.findMany({
     where: {
       traderId,
-      status: { in: ["CONFIRMED", "PENDING"] },
+      status: "CONFIRMED",
       slotStart: { gte: dayStart },
       slotEnd: { lte: dayEnd },
     },
@@ -265,40 +287,39 @@ export const getAvailableSlots = async (
   const workStart = new Date(date);
   workStart.setHours(9, 0, 0, 0);
   const workEnd = new Date(date);
-  workEnd.setHours(17, 0, 0, 0);
+  workEnd.setHours(19, 0, 0, 0); // 7:00 PM
 
   let currentSlot = new Date(workStart);
   const now = new Date();
+  const isToday = dayStart.toDateString() === now.toDateString();
 
   while (
     currentSlot.getTime() + durationMinutes * 60000 <=
     workEnd.getTime()
   ) {
-    const slotEnd = new Date(
-      currentSlot.getTime() + durationMinutes * 60000
-    );
-    const slotWithBuffer = new Date(
-      slotEnd.getTime() + TRAVEL_BUFFER_MINUTES * 60000
-    );
+    const slotEnd = new Date(currentSlot.getTime() + durationMinutes * 60000);
+    const isPast = isToday && currentSlot.getTime() <= now.getTime();
 
-    // If slot has already passed in real-time, it cannot be booked
-    const isPast = currentSlot.getTime() <= now.getTime();
-
-    const isAvailable = !isPast && !bookings.some((booking) => {
-      const bookingWithBuffer = new Date(
-        booking.slotEnd.getTime() + TRAVEL_BUFFER_MINUTES * 60000
-      );
-      return !(slotEnd <= booking.slotStart || currentSlot >= bookingWithBuffer);
+    // Check if clashing with any existing booking (including 30-minute travel buffer)
+    const clashingBooking = bookings.find((booking) => {
+      const bufferedStart = new Date(booking.slotStart.getTime() - TRAVEL_BUFFER_MINUTES * 60000);
+      const bufferedEnd = new Date(booking.slotEnd.getTime() + TRAVEL_BUFFER_MINUTES * 60000);
+      return !(slotEnd <= bufferedStart || currentSlot >= bufferedEnd);
     });
 
-    if (isAvailable) {
-      slots.push({
-        start: currentSlot.toISOString(),
-        end: slotEnd.toISOString(),
-      });
-    }
+    const isBooked = !!clashingBooking;
+    const isAvailable = !isPast && !isBooked;
 
-    currentSlot = new Date(currentSlot.getTime() + 60 * 60000);
+    slots.push({
+      start: currentSlot.toISOString(),
+      end: slotEnd.toISOString(),
+      available: isAvailable,
+      status: isBooked ? "BOOKED" : isPast ? "PAST" : "AVAILABLE",
+    });
+
+    // Advance by slot duration (60 min) + travel buffer (30 min) = 90 min
+    // 09:00-10:00 -> 10:30-11:30 -> 12:00-01:00 -> 01:30-02:30 -> 03:00-04:00 -> 04:30-05:30 -> 06:00-07:00
+    currentSlot = new Date(currentSlot.getTime() + (durationMinutes + TRAVEL_BUFFER_MINUTES) * 60000);
   }
 
   return slots;
@@ -327,6 +348,17 @@ export const createBookingFromConversation = async (
     throw new AppError(404, "Trader not found");
   }
 
+  // Cancel any prior PENDING proposals for this conversation
+  await prisma.booking.updateMany({
+    where: {
+      conversationId,
+      status: "PENDING",
+    },
+    data: {
+      status: "CANCELLED",
+    },
+  });
+
   // Assign booking to the logged-in trader
   const booking = await createBooking({
     customerId: conversation.customerId,
@@ -341,12 +373,26 @@ export const createBookingFromConversation = async (
   await prisma.conversation.update({
     where: { id: conversationId },
     data: { 
-      status: "BOOKED",
       traderId: trader.id, // Update conversation traderId to logged-in trader
     },
   });
 
   return booking;
+};
+
+export const deleteBooking = async (bookingId: string, userId: string) => {
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  if (!booking) throw new AppError(404, "Booking not found");
+
+  const trader = await prisma.trader.findUnique({ where: { userId } });
+  if (!trader) throw new AppError(404, "Trader not found");
+  if (booking.traderId !== trader.id) throw new AppError(403, "Not authorized");
+
+  // Delete related payment first (FK constraint)
+  await prisma.payment.deleteMany({ where: { bookingId } });
+  await prisma.booking.delete({ where: { id: bookingId } });
+
+  return { deleted: true };
 };
 
 export const BookingService = {
@@ -356,5 +402,6 @@ export const BookingService = {
   getBookingById,
   updateBookingStatus,
   cancelBooking,
+  deleteBooking,
   getAvailableSlots,
 };

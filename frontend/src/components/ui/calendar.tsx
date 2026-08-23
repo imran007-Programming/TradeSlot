@@ -37,15 +37,15 @@ function Calendar({
         week: "flex w-full mt-1",
         day: "h-9 w-9 text-center text-sm p-0 relative flex items-center justify-center",
         day_button: cn(
-          "h-8 w-8 p-0 font-medium text-xs text-slate-700 rounded-xl hover:bg-[#F4FEE5] hover:text-[#0F172A] transition flex items-center justify-center cursor-pointer"
+          "h-8 w-8 p-0 font-medium text-xs text-slate-700 rounded-xl hover:bg-[#FFF1F2] hover:text-[#E11D48] transition flex items-center justify-center cursor-pointer"
         ),
         range_end: "range-end",
         selected:
-          "bg-[#0F172A] text-[#84EA00] font-bold hover:bg-[#1E293B] hover:text-[#84EA00] rounded-xl shadow-sm",
-        today: "bg-[#F4FEE5] text-[#0F172A] font-bold border border-[#84EA00]",
+          "bg-[#E11D48] text-white font-bold hover:bg-[#BE123C] hover:text-white rounded-xl shadow-sm",
+        today: "bg-[#FFF1F2] text-[#E11D48] font-bold border border-[#E11D48]",
         outside: "text-slate-300 opacity-50",
         disabled: "text-slate-300 opacity-40 cursor-not-allowed",
-        range_middle: "aria-selected:bg-[#F4FEE5] aria-selected:text-[#0F172A]",
+        range_middle: "aria-selected:bg-[#FFF1F2] aria-selected:text-[#E11D48]",
         hidden: "invisible",
         ...classNames,
       }}

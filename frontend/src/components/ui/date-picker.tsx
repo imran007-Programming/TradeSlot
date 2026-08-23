@@ -55,13 +55,13 @@ export function DatePicker({
           type="button"
           disabled={disabled}
           className={cn(
-            "w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 hover:bg-slate-100/80 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-[#84EA00]/30 transition shadow-xs cursor-pointer",
+            "w-full flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 hover:bg-slate-100/80 focus:outline-none focus:border-[#E11D48] focus:ring-2 focus:ring-[#E11D48]/20 transition shadow-xs cursor-pointer",
             !value && "text-slate-400",
             className
           )}
         >
           <span className="flex items-center gap-2 font-medium">
-            <CalendarIcon className="h-3.5 w-3.5 text-[#0F172A] flex-shrink-0" />
+            <CalendarIcon className="h-3.5 w-3.5 text-[#E11D48] flex-shrink-0" />
             {selectedDate ? (
               format(selectedDate, "PPP")
             ) : (

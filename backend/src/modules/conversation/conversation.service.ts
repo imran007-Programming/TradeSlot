@@ -23,7 +23,9 @@ export const getConversations = async (userId: string) => {
           sentAt: "asc",
         },
       },
-      bookings: true,
+      bookings: {
+        include: { payment: true },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -48,7 +50,9 @@ export const getConversationById = async (
           sentAt: "asc",
         },
       },
-      bookings: true,
+      bookings: {
+        include: { payment: true },
+      },
     },
   });
 

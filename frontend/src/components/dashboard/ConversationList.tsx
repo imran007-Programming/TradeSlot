@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+import Image from 'next/image';
 import { Conversation } from '@/types/dashboard';
 import { MessageSquare, RefreshCw, Search } from 'lucide-react';
 
@@ -25,19 +27,19 @@ export default function ConversationList({
   return (
     <div className="w-full md:w-80 border-r border-slate-200 flex flex-col bg-white flex-shrink-0">
       <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50/50">
-        <h2 className="font-black text-sm text-[#0F172A] flex items-center gap-2">
-          <MessageSquare size={16} className="text-[#0F172A]" />
+        <h2 className="font-bold text-sm text-[#0F172A] flex items-center gap-2">
+          <MessageSquare size={16} className="text-[#E11D48]" />
           Intake Queue
         </h2>
         <button
           onClick={onRefresh}
-          className="text-xs font-bold text-[#0F172A] hover:text-black flex items-center gap-1.5 transition cursor-pointer group"
+          className="text-xs font-semibold text-slate-600 hover:text-[#E11D48] flex items-center gap-1.5 transition cursor-pointer group"
           title="Refresh Intakes"
         >
           <RefreshCw
             size={13}
             className={`transition-transform duration-500 group-hover:rotate-180 ${
-              isRefreshing ? 'animate-spin text-[#0F172A]' : ''
+              isRefreshing ? 'animate-spin text-[#E11D48]' : ''
             }`}
           />
           {isRefreshing ? 'Refreshing...' : 'Refresh'}
@@ -52,7 +54,7 @@ export default function ConversationList({
             placeholder="Search customer name or phone..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#0F172A] focus:ring-2 focus:ring-[#84EA00]/30"
+            className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#E11D48] focus:ring-2 focus:ring-[#E11D48]/20"
           />
         </div>
       </div>
@@ -69,18 +71,20 @@ export default function ConversationList({
                 key={conv.id}
                 onClick={() => onSelect(conv)}
                 className={`w-full text-left p-3.5 transition-all cursor-pointer ${
-                  isSelected ? 'bg-[#F4FEE5] border-l-4 border-[#84EA00]' : 'hover:bg-slate-50 border-l-4 border-transparent'
+                  isSelected ? 'bg-[#FFF1F2] border-l-4 border-[#E11D48]' : 'hover:bg-slate-50 border-l-4 border-transparent'
                 }`}
               >
                 <div className="flex justify-between items-start mb-1">
                   <div className="flex items-center gap-2">
-                    <img
+                    <Image
                       src="/images.png"
                       alt={conv.customer.name}
+                      width={28}
+                      height={28}
                       className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-xs flex-shrink-0"
                     />
                     <div>
-                      <p className={`font-black text-xs truncate max-w-[120px] ${isSelected ? 'text-[#0F172A]' : 'text-slate-800'}`}>
+                      <p className={`font-bold text-xs truncate max-w-[120px] ${isSelected ? 'text-[#E11D48]' : 'text-slate-800'}`}>
                         {conv.customer.name}
                       </p>
                       <p className="text-[10px] text-slate-400 font-mono">{conv.customer.phone}</p>
@@ -88,7 +92,7 @@ export default function ConversationList({
                   </div>
                   <span
                     className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 border ${
-                      isWA ? 'bg-[#F4FEE5] text-[#0F172A] border-[#84EA00]' : 'bg-slate-100 text-[#0F172A] border-slate-200'
+                      isWA ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-700 border-slate-200'
                     }`}
                   >
                     {isWA ? 'WhatsApp' : 'Web Chat'}

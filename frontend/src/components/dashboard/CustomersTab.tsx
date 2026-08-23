@@ -1,37 +1,34 @@
 'use client';
 
-import { Users, MessageSquare, CalendarDays } from 'lucide-react';
+import React from 'react';
+import Image from 'next/image';
+import { Customer } from '@/types/dashboard';
 
-interface CustomerItem {
-  id: string;
-  name: string;
-  phone: string;
-  channel: string;
-  totalMessages: number;
-  bookingsCount: number;
-  status: string;
+interface CustomersTabProps {
+  customers: Customer[];
 }
 
-interface Props {
-  customers: CustomerItem[];
-}
-
-export default function CustomersTab({ customers }: Props) {
+export default function CustomersTab({ customers }: CustomersTabProps) {
   if (customers.length === 0) {
     return (
-      <div className="p-12 text-center text-slate-400 text-xs">
-        <Users size={32} className="mx-auto mb-2 text-slate-300" />
-        No customer intake profiles found.
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500 font-medium">
+        No active customers found.
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-        <table className="w-full text-left border-collapse text-xs">
+    <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+      <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 className="font-bold text-slate-800 text-sm">Active Customer Directory</h3>
+        <span className="text-xs text-slate-500 font-medium">
+          {customers.length} total customer{customers.length === 1 ? '' : 's'}
+        </span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-[#0F172A] font-bold">
+            <tr className="border-b border-slate-100 bg-slate-50 text-slate-500 font-semibold uppercase text-[10px]">
               <th className="p-3">Customer</th>
               <th className="p-3">Channel</th>
               <th className="p-3">Phone Number</th>
@@ -43,9 +40,11 @@ export default function CustomersTab({ customers }: Props) {
             {customers.map((cust) => (
               <tr key={cust.id} className="hover:bg-slate-50/80 transition-colors">
                 <td className="p-3 font-bold text-slate-900 flex items-center gap-2">
-                  <img
+                  <Image
                     src="/images.png"
                     alt={cust.name}
+                    width={28}
+                    height={28}
                     className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-xs"
                   />
                   {cust.name}
@@ -54,8 +53,8 @@ export default function CustomersTab({ customers }: Props) {
                   <span
                     className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold border ${
                       cust.channel === 'WHATSAPP'
-                        ? 'bg-[#F4FEE5] text-[#0F172A] border-[#84EA00]'
-                        : 'bg-slate-100 text-[#0F172A] border-slate-200'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
                     }`}
                   >
                     {cust.channel}
@@ -63,15 +62,13 @@ export default function CustomersTab({ customers }: Props) {
                 </td>
                 <td className="p-3 font-mono text-slate-500">{cust.phone}</td>
                 <td className="p-3 text-slate-600">
-                  <span className="inline-flex items-center gap-1 font-bold text-[#0F172A]">
-                    <MessageSquare size={11} className="text-[#0F172A]" />
-                    {cust.totalMessages}
+                  <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium text-slate-700">
+                    {cust._count?.messages || 0}
                   </span>
                 </td>
                 <td className="p-3 text-slate-600">
-                  <span className="inline-flex items-center gap-1 font-bold text-[#0F172A]">
-                    <CalendarDays size={11} className="text-[#84EA00]" />
-                    {cust.bookingsCount}
+                  <span className="bg-slate-100 px-2 py-0.5 rounded-md font-medium text-slate-700">
+                    {cust._count?.bookings || 0}
                   </span>
                 </td>
               </tr>

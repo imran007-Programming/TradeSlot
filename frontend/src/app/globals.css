@@ -5,22 +5,15 @@
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
   
-  /* Primary: Deep Navy Blue */
-  --primary: #0f172a;
-  --primary-hover: #1e293b;
-  --primary-light: #f8fafc;
+  /* Primary: Coral Rose (Airbnb & Sheba Style) */
+  --primary: #e11d48;
+  --primary-hover: #be123c;
+  --primary-light: #fff1f2;
   
-  /* Secondary: Electric Lime Green */
-  --secondary: #84ea00;
-  --secondary-hover: #74d100;
-  --secondary-light: #f4fee5;
-
-  /* Custom Color Tokens */
-  --navy: #0f172a;
-  --navy-dark: #0a1120;
-  --lime: #84ea00;
-  --lime-hover: #74d100;
-  --lime-light: #f4fee5;
+  /* Secondary: Midnight Slate */
+  --secondary: #0f172a;
+  --secondary-hover: #1e293b;
+  --secondary-light: #f8fafc;
 
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
@@ -34,7 +27,7 @@
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 47.6% 11.2%;
+  --ring: 346.8 77.2% 49.8%;
   --radius: 0.75rem;
 }
 
@@ -64,8 +57,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-card:hover {
-  border-color: #0f172a;
-  box-shadow: 0 10px 25px -3px rgba(15, 23, 42, 0.08);
+  border-color: #e11d48;
+  box-shadow: 0 10px 25px -3px rgba(225, 29, 72, 0.08);
 }
 
 .glass-input {
@@ -76,8 +69,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-input:focus {
-  border-color: #0f172a;
-  box-shadow: 0 0 0 3px rgba(132, 234, 0, 0.25);
+  border-color: #e11d48;
+  box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
 }
 
 /* Custom scrollbars */
@@ -99,11 +92,6 @@ h1, h2, h3, h4, h5, h6 {
   background: #94a3b8;
 }
 
-/* Glow effects */
-.glow-lime {
-  box-shadow: 0 15px 35px -10px rgba(132, 234, 0, 0.4);
-}
-
-.glow-navy {
-  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.25);
+.glow-coral {
+  box-shadow: 0 15px 35px -10px rgba(225, 29, 72, 0.35);
 }

@@ -16,10 +16,10 @@ export default function StatsBar({
   workAreasCount,
 }: Props) {
   const stats = [
-    { label: 'Total Intakes', value: conversationsCount, icon: <MessageSquare size={18} className="text-[#0F172A]" />, border: 'border-slate-200', bg: 'bg-white', num: 'text-[#0F172A]' },
-    { label: 'Confirmed Jobs', value: bookingsCount, icon: <CalendarDays size={18} className="text-[#0F172A]" />, border: 'border-slate-200', bg: 'bg-[#F4FEE5]', num: 'text-[#0F172A]' },
+    { label: 'Total Intakes', value: conversationsCount, icon: <MessageSquare size={18} className="text-[#E11D48]" />, border: 'border-slate-200', bg: 'bg-white', num: 'text-[#0F172A]' },
+    { label: 'Confirmed Jobs', value: bookingsCount, icon: <CalendarDays size={18} className="text-emerald-600" />, border: 'border-slate-200', bg: 'bg-emerald-50/40', num: 'text-emerald-700' },
     { label: 'Customers', value: customersCount, icon: <Users size={18} className="text-[#0F172A]" />, border: 'border-slate-200', bg: 'bg-white', num: 'text-[#0F172A]' },
-    { label: 'Active Zones', value: workAreasCount, icon: <MapPin size={18} className="text-[#0F172A]" />, border: 'border-slate-200', bg: 'bg-white', num: 'text-[#0F172A]' },
+    { label: 'Active Zones', value: workAreasCount, icon: <MapPin size={18} className="text-[#E11D48]" />, border: 'border-slate-200', bg: 'bg-white', num: 'text-[#0F172A]' },
   ];
 
   return (
@@ -27,10 +27,10 @@ export default function StatsBar({
       {stats.map((s, i) => (
         <div key={i} className={`p-3.5 rounded-2xl border ${s.border} ${s.bg} flex items-center justify-between shadow-2xs`}>
           <div>
-            <p className="text-xs text-slate-500 font-bold">{s.label}</p>
-            <p className={`text-2xl font-black ${s.num} mt-0.5`}>{s.value}</p>
+            <p className="text-xs text-slate-500 font-medium">{s.label}</p>
+            <p className={`text-2xl font-bold ${s.num} mt-0.5`}>{s.value}</p>
           </div>
-          <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
             {s.icon}
           </div>
         </div>

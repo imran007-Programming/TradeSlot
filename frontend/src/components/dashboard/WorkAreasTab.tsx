@@ -14,14 +14,14 @@ export default function WorkAreasTab({ workAreas, onAdd, onDelete }: Props) {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-lg font-black text-[#0F172A]">Work Area Coverage</h2>
+          <h2 className="text-lg font-bold text-[#0F172A]">Work Area Coverage</h2>
           <p className="text-xs text-slate-500">Define your service zones per date to automatically restrict travel buffers.</p>
         </div>
         <button
           onClick={onAdd}
-          className="bg-[#0F172A] hover:bg-[#1E293B] text-[#84EA00] px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-xs cursor-pointer"
+          className="bg-[#E11D48] hover:bg-[#BE123C] text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
         >
-          <Plus size={14} className="text-[#84EA00]" />
+          <Plus size={14} className="text-white" />
           Set Daily Zone
         </button>
       </div>
@@ -36,7 +36,7 @@ export default function WorkAreasTab({ workAreas, onAdd, onDelete }: Props) {
           {workAreas.map((wa) => (
             <div
               key={wa.id}
-              className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-[#0F172A] hover:shadow-md transition-all"
+              className="bg-white p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-[#E11D48] hover:shadow-md transition-all"
             >
               <button
                 onClick={() => onDelete(wa.id)}
@@ -45,13 +45,13 @@ export default function WorkAreasTab({ workAreas, onAdd, onDelete }: Props) {
               >
                 <Trash2 size={13} />
               </button>
-              <div className="w-9 h-9 rounded-xl bg-[#F4FEE5] flex items-center justify-center border border-[#84EA00]/40">
-                <MapPin size={18} className="text-[#0F172A]" />
+              <div className="w-9 h-9 rounded-xl bg-[#FFF1F2] flex items-center justify-center border border-[#E11D48]/30">
+                <MapPin size={18} className="text-[#E11D48]" />
               </div>
-              <h3 className="font-black text-[#0F172A] text-sm">{wa.area}</h3>
+              <h3 className="font-bold text-[#0F172A] text-sm">{wa.area}</h3>
               <p className="text-xs text-slate-500">{new Date(wa.availableDate).toLocaleDateString()}</p>
-              <span className="inline-flex items-center gap-1 bg-[#F4FEE5] text-[#0F172A] border border-[#84EA00] text-[10px] font-black px-2 py-0.5 rounded-full">
-                <CheckCircle size={10} className="text-[#0F172A]" /> Active Zone
+              <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                <CheckCircle size={10} className="text-emerald-600" /> Active Zone
               </span>
             </div>
           ))}

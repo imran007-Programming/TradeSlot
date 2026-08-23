@@ -189,6 +189,29 @@ export const cancelBookingController = async (
   }
 };
 
+export const deleteBookingController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const bookingId = Array.isArray(req.params.bookingId) ? req.params.bookingId[0] : req.params.bookingId;
+    const userId = (req as any).user?.userId;
+    if (!userId) throw new AppError(401, "User not authenticated");
+
+    await BookingService.deleteBooking(bookingId, userId);
+
+    return sendResponse(res, {
+      success: true,
+      message: "Booking deleted successfully",
+      statusCode: 200,
+      data: null,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createBookingFromConversationController = async (
   req: Request,
   res: Response,

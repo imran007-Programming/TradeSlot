@@ -241,23 +241,32 @@ const getPaymentSummary = async (userId: string) => {
     const trader = await prisma.trader.findUnique({ where: { userId } });
     if (!trader) throw new AppError(404, "Trader not found");
 
-    const payments = await prisma.payment.findMany({
-        where: { booking: { traderId: trader.id } },
-        select: { amount: true, status: true, applicationFeeAmount: true },
+    const bookings = await prisma.booking.findMany({
+        where: {
+            traderId: trader.id,
+            status: { not: "CANCELLED" },
+        },
+        include: { payment: true },
     });
 
-    const totalEarned = payments
-        .filter(p => p.status === 'SUCCEEDED')
-        .reduce((sum, p) => sum + Number(p.amount) - Number(p.applicationFeeAmount ?? 0), 0);
+    let totalEarned = 0;
+    let totalPending = 0;
+    let succeededCount = 0;
+    let pendingCount = 0;
 
-    const totalPending = payments
-        .filter(p => p.status === 'REQUIRES_PAYMENT')
-        .reduce((sum, p) => sum + Number(p.amount), 0);
+    for (const b of bookings) {
+        const fee = Number(b.bookingFee) || 0;
+        if (b.payment?.status === "SUCCEEDED") {
+            const appFee = Number(b.payment.applicationFeeAmount) || 0;
+            totalEarned += (fee - appFee);
+            succeededCount++;
+        } else {
+            totalPending += fee;
+            pendingCount++;
+        }
+    }
 
-    const succeededCount = payments.filter(p => p.status === 'SUCCEEDED').length;
-    const pendingCount = payments.filter(p => p.status === 'REQUIRES_PAYMENT').length;
-
-    return { totalEarned, totalPending, succeededCount, pendingCount };
+    return { totalEarned, totalPending, succeededCount, pendingCount, totalBookings: bookings.length };
 };
 
 export const PaymentService = {

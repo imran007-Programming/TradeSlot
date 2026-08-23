@@ -43,7 +43,7 @@ export const getWebChatMessages = async (phone: string, traderId?: string) => {
     traderId = trader.id;
   }
   
-  // Find customer matching exact phone or ending digits (e.g. 01712345678 vs 8801712345678)
+  // Find customer matching exact phone or ending digits
   const customer = await prisma.customer.findFirst({
     where: {
       OR: [
@@ -69,4 +69,82 @@ export const getWebChatMessages = async (phone: string, traderId?: string) => {
   });
 
   return conversation?.messages || [];
+};
+
+export const confirmWebChatBooking = async (bookingId: string, phone?: string) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: { customer: true, conversation: true },
+  });
+
+  if (!booking) {
+    throw new AppError(404, "Booking not found");
+  }
+
+  if (booking.status === "CONFIRMED") {
+    return booking; // Already confirmed
+  }
+
+  // Check if any other CONFIRMED booking clashes with this slot
+  const clashingConfirmed = await prisma.booking.findFirst({
+    where: {
+      traderId: booking.traderId,
+      id: { not: bookingId },
+      status: "CONFIRMED",
+      slotStart: {
+        lt: new Date(booking.slotEnd.getTime() + booking.bufferMinutes * 60000),
+      },
+      slotEnd: {
+        gt: new Date(booking.slotStart.getTime() - booking.bufferMinutes * 60000),
+      },
+    },
+  });
+
+  if (clashingConfirmed) {
+    throw new AppError(409, "This slot was just booked by another customer. Please choose another time.");
+  }
+
+  const updatedBooking = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: "CONFIRMED" },
+  });
+
+  // Cancel any other lingering PENDING proposals for this customer
+  await prisma.booking.updateMany({
+    where: {
+      customerId: booking.customerId,
+      id: { not: bookingId },
+      status: "PENDING",
+    },
+    data: {
+      status: "CANCELLED",
+    },
+  });
+
+  if (booking.conversationId) {
+    await prisma.conversation.update({
+      where: { id: booking.conversationId },
+      data: { status: "BOOKED" },
+    });
+
+    const dateFormatted = new Date(booking.slotStart).toLocaleDateString([], {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+    const startTimeStr = new Date(booking.slotStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const endTimeStr = new Date(booking.slotEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    await prisma.message.create({
+      data: {
+        conversationId: booking.conversationId,
+        sender: "CUSTOMER",
+        channel: "WEB_CHAT",
+        content: `Booking Confirmed: ${dateFormatted} (${startTimeStr} - ${endTimeStr}) (Fee: $${booking.bookingFee}) [ID: ${booking.id}]`,
+      },
+    });
+  }
+
+  return updatedBooking;
 };
