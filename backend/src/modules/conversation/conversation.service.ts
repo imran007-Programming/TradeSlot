@@ -1,7 +1,7 @@
 import { ConversationStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/Apperror";
-import { sendWhatsAppMessage } from "../../services/twilio.service";
+import { sendWhatsAppMessage } from "../../services/ultramsg.service";
 
 export const getConversations = async (userId: string) => {
   const trader = await prisma.trader.findUnique({

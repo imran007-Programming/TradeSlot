@@ -52,3 +52,25 @@ export const getPaymentStatusController = async (
         next(error);
     }
 };
+
+export const getPaymentSummaryController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const userId = (req as any).user?.userId;
+        if (!userId) throw new AppError(401, "User not authenticated");
+
+        const summary = await PaymentService.getPaymentSummary(userId);
+
+        return sendResponse(res, {
+            success: true,
+            message: "Payment summary retrieved",
+            statusCode: 200,
+            data: summary,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

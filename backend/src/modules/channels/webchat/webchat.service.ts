@@ -1,8 +1,7 @@
 import { normalizeWebChatMessage } from "./webchat.adapter";
-import * as messageService from "../../message/message.service";
+import { processIncomingMessage } from "../../../services/booking-engine.service";
 import { AppError } from "../../../utils/Apperror";
 import { prisma } from "../../../lib/prisma";
-
 
 export interface WebChatMessageInput {
   phone: string;
@@ -24,21 +23,15 @@ export const handleWebChatMessage = async (data: WebChatMessageInput) => {
     traderId = trader.id;
   }
 
-  const normalized = normalizeWebChatMessage({
-    phone,
-    text,
-    name,
-  });
+  const normalized = normalizeWebChatMessage({ phone, text, name });
 
-  const result = await messageService.receiveMessage({
+  return processIncomingMessage({
     phone: normalized.phone,
     name: normalized.name,
-    traderId,
     channel: normalized.channel,
     content: normalized.content,
+    traderId,
   });
-
-  return result;
 };
 
 export const getWebChatMessages = async (phone: string, traderId?: string) => {

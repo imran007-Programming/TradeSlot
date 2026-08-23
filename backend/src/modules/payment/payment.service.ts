@@ -215,10 +215,34 @@ const getPaymentByBookingId = async (bookingId: string, userId: string) => {
     return prisma.payment.findUnique({ where: { bookingId } });
 };
 
+const getPaymentSummary = async (userId: string) => {
+    const trader = await prisma.trader.findUnique({ where: { userId } });
+    if (!trader) throw new AppError(404, "Trader not found");
+
+    const payments = await prisma.payment.findMany({
+        where: { booking: { traderId: trader.id } },
+        select: { amount: true, status: true, applicationFeeAmount: true },
+    });
+
+    const totalEarned = payments
+        .filter(p => p.status === 'SUCCEEDED')
+        .reduce((sum, p) => sum + Number(p.amount) - Number(p.applicationFeeAmount ?? 0), 0);
+
+    const totalPending = payments
+        .filter(p => p.status === 'REQUIRES_PAYMENT')
+        .reduce((sum, p) => sum + Number(p.amount), 0);
+
+    const succeededCount = payments.filter(p => p.status === 'SUCCEEDED').length;
+    const pendingCount = payments.filter(p => p.status === 'REQUIRES_PAYMENT').length;
+
+    return { totalEarned, totalPending, succeededCount, pendingCount };
+};
+
 export const PaymentService = {
     createCheckoutSession,
     handleCheckoutCompleted,
     handlePaymentSuccess,
     handlePaymentFailed,
     getPaymentByBookingId,
+    getPaymentSummary,
 };

@@ -1,5 +1,5 @@
 import { normalizeWhatsAppMessage } from "./whatsapp.adapter";
-import * as messageService from "../../message/message.service";
+import { processIncomingMessage } from "../../../services/booking-engine.service";
 import { AppError } from "../../../utils/Apperror";
 
 export interface WhatsAppMessageInput {
@@ -17,20 +17,13 @@ export const handleWhatsAppMessage = async (data: WhatsAppMessageInput) => {
     throw new AppError(400, "Missing required fields: from, text, traderId");
   }
 
-  const normalized = normalizeWhatsAppMessage({
-    from,
-    text,
-    timestamp,
-    name,
-  });
+  const normalized = normalizeWhatsAppMessage({ from, text, timestamp, name });
 
-  const result = await messageService.receiveMessage({
+  return processIncomingMessage({
     phone: normalized.phone,
     name: normalized.name,
-    traderId,
     channel: normalized.channel,
     content: normalized.content,
+    traderId,
   });
-
-  return result;
 };
