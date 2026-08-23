@@ -26,8 +26,23 @@ app.use(cors({
 
 app.use('/api', router);
 
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'TradeSlot API is running',
+        version: '1.0.0',
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+    });
+});
+
 app.get('/health', (req, res) => {
-    res.send('api is running')
+    res.json({
+        success: true,
+        message: 'API is running',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+    });
 });
 
 app.use(globalErrorHandler);
