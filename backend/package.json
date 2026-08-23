@@ -4,14 +4,14 @@
   "description": "",
   "main": "dist/app.js",
   "scripts": {
-    "postinstall": "prisma generate --schema=prisma/models",
+    "postinstall": "npx prisma generate --schema=prisma/models",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "prisma generate --schema=prisma/models && tsc",
+    "build": "npx prisma generate --schema=prisma/models && tsc",
     "start": "node dist/server.js",
-    "migrate:deploy": "prisma migrate deploy --schema=prisma/models",
-    "db:generate": "prisma generate --schema=prisma/models",
-    "db:migrate": "prisma migrate dev --schema=prisma/models",
-    "db:reset": "prisma migrate reset --schema=prisma/models"
+    "migrate:deploy": "npx prisma migrate deploy --schema=prisma/models",
+    "db:generate": "npx prisma generate --schema=prisma/models",
+    "db:migrate": "npx prisma migrate dev --schema=prisma/models",
+    "db:reset": "npx prisma migrate reset --schema=prisma/models"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
