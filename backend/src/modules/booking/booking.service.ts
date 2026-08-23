@@ -69,7 +69,7 @@ export const createBooking = async (data: ICreateBooking) => {
       slotStart: start,
       slotEnd: end,
       bufferMinutes,
-      bookingFee: bookingFee.toString(),
+      bookingFee: bookingFee,
       conversationId,
       status: "PENDING",
     },

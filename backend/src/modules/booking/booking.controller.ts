@@ -57,7 +57,7 @@ export const createBookingController = async (
       slotStart,
       slotEnd,
       bufferMinutes: 30,
-      bookingFee,
+      bookingFee: parseFloat(bookingFee),
       conversationId,
     });
 
@@ -210,7 +210,7 @@ export const createBookingFromConversationController = async (
       conversationId,
       slotStart,
       slotEnd,
-      bookingFee,
+      parseFloat(bookingFee),
       userId
     );
 

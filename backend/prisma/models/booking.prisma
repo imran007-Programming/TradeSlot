@@ -9,7 +9,7 @@ model Booking {
   slotStart      DateTime
   slotEnd        DateTime
   bufferMinutes  Int
-  bookingFee     Decimal       @db.Decimal(10, 2)
+  bookingFee     Float
   status         BookingStatus @default(PENDING)
   createdAt      DateTime      @default(now())
   payment        Payment?

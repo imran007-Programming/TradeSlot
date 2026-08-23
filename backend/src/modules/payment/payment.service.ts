@@ -98,7 +98,7 @@ const createCheckoutSession = async (bookingId: string, userId: string) => {
             data: {
                 stripePaymentIntentId: paymentIntentId,
                 amount: booking.bookingFee,
-                applicationFeeAmount: (PLATFORM_FEE_CENTS / 100).toString(),
+                applicationFeeAmount: PLATFORM_FEE_CENTS / 100,
                 status: "REQUIRES_PAYMENT",
             },
         });
@@ -108,7 +108,7 @@ const createCheckoutSession = async (bookingId: string, userId: string) => {
                 bookingId: booking.id,
                 stripePaymentIntentId: paymentIntentId,
                 amount: booking.bookingFee,
-                applicationFeeAmount: (PLATFORM_FEE_CENTS / 100).toString(),
+                applicationFeeAmount: PLATFORM_FEE_CENTS / 100,
                 status: "REQUIRES_PAYMENT",
             },
         });

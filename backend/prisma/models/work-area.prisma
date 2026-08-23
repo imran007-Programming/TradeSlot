@@ -2,7 +2,7 @@ model WorkArea {
   id            String   @id @default(uuid())
   traderId      String
   trader        Trader   @relation(fields: [traderId], references: [id])
-  availableDate DateTime @db.Date
+  availableDate DateTime
   area          String
   createdAt     DateTime @default(now())
 
