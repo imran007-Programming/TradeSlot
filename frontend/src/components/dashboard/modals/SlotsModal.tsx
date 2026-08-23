@@ -1,4 +1,5 @@
 import { Clock } from 'lucide-react';
+import { DatePicker } from '@/components/ui/date-picker';
 
 interface Slot {
   start: string;
@@ -15,15 +16,28 @@ interface Props {
   onClose: () => void;
 }
 
-export default function SlotsModal({ slotsDate, availableSlots, loadingSlots, onDateChange, onFetch, onSelectSlot, onClose }: Props) {
+export default function SlotsModal({
+  slotsDate,
+  availableSlots,
+  loadingSlots,
+  onDateChange,
+  onFetch,
+  onSelectSlot,
+  onClose,
+}: Props) {
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
         <h3 className="text-sm font-bold text-slate-800">Available Slots (30m Buffer)</h3>
-        <div className="flex gap-2">
-          <input type="date" value={slotsDate} onChange={e => onDateChange(e.target.value)}
-            className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-violet-400" />
-          <button onClick={onFetch} disabled={loadingSlots} className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-bold">
+        <div className="flex gap-2 items-center">
+          <div className="flex-1">
+            <DatePicker value={slotsDate} onChange={onDateChange} placeholder="Select date" />
+          </div>
+          <button
+            onClick={onFetch}
+            disabled={loadingSlots}
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs flex-shrink-0"
+          >
             {loadingSlots ? 'Loading...' : 'Check'}
           </button>
         </div>

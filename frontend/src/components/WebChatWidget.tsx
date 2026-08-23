@@ -98,6 +98,11 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
   };
 
   const extractUrl = (text: string) => text.match(/(https?:\/\/[^\s]+)/)?.[0] || null;
+  const isBookingMsg = (text: string) => text.toLowerCase().startsWith('booking confirmed:');
+  const parseBooking = (text: string) => {
+    const slotMatch = text.match(/Booking Confirmed:\s*(.+?)\s*\(Fee:\s*\$([\d.]+)\)/);
+    return slotMatch ? { slot: slotMatch[1], fee: slotMatch[2] } : null;
+  };
 
   return (
     <div
@@ -160,10 +165,36 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
                     ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-br-none'
                     : isPayment
                     ? 'bg-slate-900 border border-purple-500/40 text-slate-100 rounded-bl-none'
+                    : isBookingMsg(msg.content)
+                    ? 'bg-slate-900 border border-emerald-500/40 text-slate-100 rounded-bl-none p-0 overflow-hidden'
                     : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-bl-none'
                 }`}
               >
-                {isPayment && url ? (
+                {isBookingMsg(msg.content) ? (
+                  <div className="space-y-0">
+                    <div className="bg-emerald-600/20 border-b border-emerald-500/30 px-4 py-2 flex items-center gap-2">
+                      <span className="text-emerald-400 text-base">✅</span>
+                      <p className="text-emerald-400 font-bold text-xs">Booking Confirmed!</p>
+                    </div>
+                    <div className="px-4 py-3 space-y-1.5">
+                      {(() => {
+                        const b = parseBooking(msg.content);
+                        return b ? (
+                          <>
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <span className="text-slate-500">🗓</span>
+                              <span className="font-semibold">{b.slot}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <span className="text-slate-500">💰</span>
+                              <span>Booking Fee: <strong className="text-white">${b.fee}</strong></span>
+                            </div>
+                          </>
+                        ) : <p className="text-slate-300">{msg.content}</p>;
+                      })()}
+                    </div>
+                  </div>
+                ) : isPayment && url ? (
                   <div className="space-y-2">
                     <p className="text-[10px] font-semibold text-purple-300">💳 Payment Link</p>
                     <p>{msg.content.replace(url, '').trim()}</p>

@@ -6,10 +6,11 @@ import { apiClient } from '@/lib/api';
 import { getCookie, deleteCookie } from '@/lib/cookies';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   MessageSquare, CalendarDays, Users, MapPin, Zap, LogOut,
   RefreshCw, CreditCard, Search, Send, Plus, Trash2, CheckCircle,
-  Clock, BarChart3
+  Clock, BarChart3, DollarSign, TrendingUp
 } from 'lucide-react';
 
 interface Message {
@@ -58,6 +59,7 @@ export default function DashboardPage() {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [user, setUser] = useState<any>(null);
   const [stripeStatus, setStripeStatus] = useState<{ connected: boolean; onboardingComplete: boolean }>({ connected: false, onboardingComplete: false });
+  const [paymentSummary, setPaymentSummary] = useState<{ totalEarned: number; totalPending: number; succeededCount: number; pendingCount: number }>({ totalEarned: 0, totalPending: 0, succeededCount: 0, pendingCount: 0 });
   const [connectingStripe, setConnectingStripe] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
@@ -106,7 +108,14 @@ export default function DashboardPage() {
   }, [router]);
 
   const refreshAll = async () => {
-    await Promise.all([fetchConversations(), fetchBookings(), fetchWorkAreas(), checkStripe()]);
+    await Promise.all([fetchConversations(), fetchBookings(), fetchWorkAreas(), checkStripe(), fetchPaymentSummary()]);
+  };
+
+  const fetchPaymentSummary = async () => {
+    try {
+      const res = await apiClient.get('/payments/summary');
+      if (res.success && res.data) setPaymentSummary(res.data);
+    } catch {}
   };
 
   const fetchConversations = async () => {
@@ -380,21 +389,54 @@ export default function DashboardPage() {
         <main className="flex-1 h-full overflow-hidden bg-slate-50 p-4 flex flex-col gap-4">
 
           {/* Stats */}
-          <div className="grid grid-cols-4 gap-3 flex-shrink-0">
-            {[
-              { label: 'Total Intakes', value: conversations.length, icon: <MessageSquare size={18} className="text-violet-600" />, border: 'border-violet-200', num: 'text-violet-700' },
-              { label: 'Confirmed Jobs', value: bookings.length, icon: <CalendarDays size={18} className="text-emerald-600" />, border: 'border-emerald-200', num: 'text-emerald-700' },
-              { label: 'Travel Buffer', value: '30 min', icon: <Clock size={18} className="text-amber-600" />, border: 'border-amber-200', num: 'text-amber-700' },
-              { label: 'Stripe Payouts', value: stripeStatus.onboardingComplete ? 'Active' : 'Not Setup', icon: <CreditCard size={18} className="text-sky-600" />, border: 'border-sky-200', num: 'text-sky-700' },
-            ].map((card, i) => (
-              <div key={i} className={`bg-white border ${card.border} rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow`}>
-                <div>
-                  <p className="text-xs text-slate-500 font-medium">{card.label}</p>
-                  <h3 className={`text-2xl font-bold mt-0.5 ${card.num}`}>{card.value}</h3>
-                </div>
-                <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">{card.icon}</div>
+          <div className="grid grid-cols-5 gap-3 flex-shrink-0">
+            <div className="bg-white border border-violet-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Total Intakes</p>
+                <h3 className="text-2xl font-bold mt-0.5 text-violet-700">{conversations.length}</h3>
               </div>
-            ))}
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <MessageSquare size={18} className="text-violet-600" />
+              </div>
+            </div>
+            <div className="bg-white border border-emerald-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Confirmed Jobs</p>
+                <h3 className="text-2xl font-bold mt-0.5 text-emerald-700">{bookings.length}</h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <CalendarDays size={18} className="text-emerald-600" />
+              </div>
+            </div>
+            <div className="bg-white border border-sky-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Total Earned</p>
+                <h3 className="text-2xl font-bold mt-0.5 text-sky-700">${paymentSummary.totalEarned.toFixed(2)}</h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.succeededCount} paid</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <DollarSign size={18} className="text-sky-600" />
+              </div>
+            </div>
+            <div className="bg-white border border-amber-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Pending Payments</p>
+                <h3 className="text-2xl font-bold mt-0.5 text-amber-700">${paymentSummary.totalPending.toFixed(2)}</h3>
+                <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.pendingCount} awaiting</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <TrendingUp size={18} className="text-amber-600" />
+              </div>
+            </div>
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+              <div>
+                <p className="text-xs text-slate-500 font-medium">Stripe Payouts</p>
+                <h3 className="text-sm font-bold mt-0.5 text-slate-700">{stripeStatus.onboardingComplete ? 'Active' : 'Not Setup'}</h3>
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+                <CreditCard size={18} className="text-slate-600" />
+              </div>
+            </div>
           </div>
 
           {/* MESSAGES TAB */}
@@ -711,7 +753,7 @@ export default function DashboardPage() {
             <form onSubmit={handleCreateBooking} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Booking Date</label>
-                <input type="date" value={bookingDate} onChange={e => setBookingDate(e.target.value)} className={inputCls} required />
+                <DatePicker value={bookingDate} onChange={setBookingDate} placeholder="Select booking date" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -745,11 +787,15 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
             <h3 className="text-sm font-bold text-slate-800">Available Slots (30m Buffer)</h3>
-            <div className="flex gap-2">
-              <input type="date" value={slotsDate} onChange={e => setSlotsDate(e.target.value)}
-                className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-violet-400" />
-              <button onClick={handleFetchSlots} disabled={loadingSlots}
-                className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-bold">
+            <div className="flex gap-2 items-center">
+              <div className="flex-1">
+                <DatePicker value={slotsDate} onChange={setSlotsDate} placeholder="Select date" />
+              </div>
+              <button
+                onClick={handleFetchSlots}
+                disabled={loadingSlots}
+                className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs flex-shrink-0"
+              >
                 {loadingSlots ? 'Loading...' : 'Check'}
               </button>
             </div>
@@ -793,7 +839,7 @@ export default function DashboardPage() {
             <form onSubmit={handleSetWorkArea} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Available Date</label>
-                <input type="date" value={workAreaDate} onChange={e => setWorkAreaDate(e.target.value)} className={inputCls} required />
+                <DatePicker value={workAreaDate} onChange={setWorkAreaDate} placeholder="Select zone date" />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Area / Location Name</label>

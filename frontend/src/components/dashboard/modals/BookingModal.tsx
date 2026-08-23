@@ -1,3 +1,5 @@
+import { DatePicker } from '@/components/ui/date-picker';
+
 interface Props {
   customerName?: string;
   bookingDate: string;
@@ -16,7 +18,21 @@ interface Props {
 
 const inputCls = "w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100";
 
-export default function BookingModal({ customerName, bookingDate, startTime, endTime, bookingFee, bookingError, creatingBooking, onDateChange, onStartChange, onEndChange, onFeeChange, onSubmit, onClose }: Props) {
+export default function BookingModal({
+  customerName,
+  bookingDate,
+  startTime,
+  endTime,
+  bookingFee,
+  bookingError,
+  creatingBooking,
+  onDateChange,
+  onStartChange,
+  onEndChange,
+  onFeeChange,
+  onSubmit,
+  onClose,
+}: Props) {
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
@@ -27,7 +43,7 @@ export default function BookingModal({ customerName, bookingDate, startTime, end
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1">Booking Date</label>
-            <input type="date" value={bookingDate} onChange={e => onDateChange(e.target.value)} className={inputCls} required />
+            <DatePicker value={bookingDate} onChange={onDateChange} placeholder="Select booking date" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
