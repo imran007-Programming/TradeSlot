@@ -37,15 +37,15 @@ function Calendar({
         week: "flex w-full mt-1",
         day: "h-9 w-9 text-center text-sm p-0 relative flex items-center justify-center",
         day_button: cn(
-          "h-8 w-8 p-0 font-medium text-xs text-slate-700 rounded-xl hover:bg-violet-50 hover:text-violet-700 transition flex items-center justify-center cursor-pointer"
+          "h-8 w-8 p-0 font-medium text-xs text-slate-700 rounded-xl hover:bg-indigo-50 hover:text-indigo-700 transition flex items-center justify-center cursor-pointer"
         ),
         range_end: "range-end",
         selected:
-          "bg-violet-600 text-white font-bold hover:bg-violet-700 hover:text-white rounded-xl shadow-sm shadow-violet-200",
+          "bg-indigo-600 text-white font-bold hover:bg-indigo-700 hover:text-white rounded-xl shadow-sm shadow-indigo-200",
         today: "bg-slate-100 text-slate-900 font-bold border border-slate-300",
         outside: "text-slate-300 opacity-50",
         disabled: "text-slate-300 opacity-40 cursor-not-allowed",
-        range_middle: "aria-selected:bg-violet-50 aria-selected:text-violet-700",
+        range_middle: "aria-selected:bg-indigo-50 aria-selected:text-indigo-700",
         hidden: "invisible",
         ...classNames,
       }}

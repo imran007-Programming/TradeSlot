@@ -160,9 +160,9 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
               <div
                 className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-xs break-words text-xs leading-relaxed ${
                   isCustomer
-                    ? 'bg-violet-600 text-white rounded-br-none'
+                    ? 'bg-indigo-600 text-white rounded-br-none'
                     : isPayment
-                    ? 'bg-white border border-violet-200 text-slate-800 rounded-bl-none'
+                    ? 'bg-white border border-indigo-200 text-slate-800 rounded-bl-none'
                     : isBookingMsg(msg.content)
                     ? 'bg-white border border-emerald-200 text-slate-800 rounded-bl-none p-0 overflow-hidden'
                     : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none'
@@ -194,13 +194,13 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
                   </div>
                 ) : isPayment && url ? (
                   <div className="space-y-2">
-                    <p className="text-[10px] font-semibold text-violet-600">💳 Payment Link</p>
+                    <p className="text-[10px] font-semibold text-indigo-600">💳 Payment Link</p>
                     <p className="text-slate-700">{msg.content.replace(url, '').trim()}</p>
                     <a
                       href={url}
                       target="_blank"
                       rel="noreferrer"
-                      className="block w-full text-center py-2 px-3 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold rounded-xl transition shadow-xs"
+                      className="block w-full text-center py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shadow-xs"
                     >
                       💳 Complete Payment on Stripe
                     </a>
@@ -209,7 +209,7 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 )}
                 {msg.sentAt && (
-                  <span className={`text-[9px] block text-right mt-1 ${isCustomer ? 'text-violet-200' : 'text-slate-400'}`}>
+                  <span className={`text-[9px] block text-right mt-1 ${isCustomer ? 'text-indigo-200' : 'text-slate-400'}`}>
                     {new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 )}
@@ -220,10 +220,10 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
 
         {loading && (
           <div className="flex justify-end">
-            <div className="bg-violet-100 px-4 py-2.5 rounded-2xl rounded-br-none flex space-x-1.5">
-              <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" />
-              <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
-              <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
+            <div className="bg-indigo-100 px-4 py-2.5 rounded-2xl rounded-br-none flex space-x-1.5">
+              <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce" />
+              <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }} />
+              <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }} />
             </div>
           </div>
         )}
@@ -247,7 +247,7 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
             placeholder="Your Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
+            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
           />
           <input
             type="tel"
@@ -255,11 +255,11 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
+            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
           />
           <button
             onClick={handleStart}
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
           >
             Start Chat
           </button>
@@ -275,13 +275,13 @@ export default function WebChatWidget({ onClose }: { onClose: () => void }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100 transition"
+            className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition"
             disabled={loading}
           />
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl disabled:opacity-50 transition font-bold text-xs cursor-pointer shadow-sm"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl disabled:opacity-50 transition font-bold text-xs cursor-pointer shadow-sm"
           >
             Send
           </button>

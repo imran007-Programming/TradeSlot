@@ -28,3 +28,9 @@ export interface Conversation {
   messages: Message[];
   bookings?: Booking[];
 }
+
+export interface WorkArea {
+  id: string;
+  area: string;
+  availableDate: string | Date;
+}

@@ -7,6 +7,7 @@ import { getCookie, deleteCookie } from '@/lib/cookies';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/ui/date-picker';
+import SlotsModal, { Slot } from '@/components/dashboard/modals/SlotsModal';
 import {
   MessageSquare, CalendarDays, Users, MapPin, Zap, LogOut,
   RefreshCw, CreditCard, Search, Send, Plus, Trash2, CheckCircle,
@@ -235,20 +236,23 @@ export default function DashboardPage() {
     finally { setGeneratingPayment(null); }
   };
 
-  const handleFetchSlots = async () => {
+  const handleFetchSlots = async (targetDate?: string) => {
     if (!user?.trader?.id && !selectedConversation?.traderId) return;
     setLoadingSlots(true);
     try {
+      const dateToFetch = targetDate || slotsDate;
       const traderId = user?.trader?.id || selectedConversation?.traderId;
-      const res = await apiClient.get('/bookings/slots/available?traderId=' + traderId + '&date=' + slotsDate);
+      const res = await apiClient.get('/bookings/slots/available?traderId=' + traderId + '&date=' + dateToFetch);
       if (res.success) {
         setAvailableSlots(res.data || []);
-        if (!res.data || res.data.length === 0) {
-          toast.info('No slots available for this date');
-        }
+      } else {
+        setAvailableSlots([]);
+        toast.error(res.message || 'Could not fetch slots');
       }
-      else toast.error(res.message || 'Could not fetch slots');
-    } catch (err: any) { toast.error(err.message); }
+    } catch (err: any) {
+      setAvailableSlots([]);
+      toast.error(err.message || 'Error fetching slots');
+    }
     finally { setLoadingSlots(false); }
   };
 
@@ -278,6 +282,15 @@ export default function DashboardPage() {
       } else {
         toast.error(res.message || 'Failed to delete work area');
       }
+    } catch (err: any) { toast.error(err.message); }
+  };
+
+  const handleDeleteBooking = async (bookingId: string) => {
+    if (!confirm('Delete this booking?')) return;
+    try {
+      const res = await apiClient.delete('/bookings/' + bookingId);
+      if (res.success) { toast.success('Booking deleted!'); await fetchBookings(); }
+      else toast.error(res.message || 'Failed to delete booking');
     } catch (err: any) { toast.error(err.message); }
   };
 
@@ -351,7 +364,7 @@ export default function DashboardPage() {
     { tab: 'workareas' as const, icon: <MapPin size={15} />, label: 'Work Areas', count: workAreas.length },
   ];
 
-  const inputCls = "w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100";
+  const inputCls = "w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
 
   return (
     <div className="h-screen w-screen bg-slate-50 text-slate-800 flex flex-col overflow-hidden" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
@@ -359,14 +372,14 @@ export default function DashboardPage() {
       {/* Navbar */}
       <header className="h-14 bg-white border-b border-slate-200 px-5 flex items-center justify-between flex-shrink-0 z-30 shadow-sm">
         <div className="flex items-center space-x-3">
-          <Link href="/" className="w-8 h-8 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center shadow-md shadow-violet-200">
+          <Link href="/" className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-100">
             <Zap size={15} className="text-white" />
           </Link>
           <h1 className="text-sm font-bold text-slate-800 tracking-tight">TradeSlot</h1>
-          <span className="text-[10px] bg-violet-100 text-violet-600 border border-violet-200 px-1.5 py-0.5 rounded-md uppercase tracking-widest font-bold">Pro</span>
+          <span className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded-md uppercase tracking-widest font-bold">Pro</span>
         </div>
         <div className="flex items-center space-x-2">
-          <button onClick={() => setShowWorkAreaModal(true)} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5">
+          <button onClick={() => setShowWorkAreaModal(true)} className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer">
             <MapPin size={13} /> Set Work Area
           </button>
           {stripeStatus.onboardingComplete ? (
@@ -383,13 +396,13 @@ export default function DashboardPage() {
               </button>
             </div>
           ) : (
-            <button onClick={handleConnectStripe} disabled={connectingStripe} className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 transition shadow-md shadow-violet-200 flex items-center gap-1.5">
+            <button onClick={handleConnectStripe} disabled={connectingStripe} className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50 transition shadow-sm flex items-center gap-1.5 cursor-pointer">
               <CreditCard size={13} /> {connectingStripe ? 'Connecting...' : 'Connect Stripe'}
             </button>
           )}
           <div className="h-5 w-px bg-slate-200 mx-1" />
           <span className="text-xs text-slate-400 font-mono">{user?.phone}</span>
-          <button onClick={handleLogout} className="bg-slate-100 border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-200 transition flex items-center gap-1.5">
+          <button onClick={handleLogout} className="bg-slate-100 border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-200 transition flex items-center gap-1.5 cursor-pointer">
             <LogOut size={13} /> Logout
           </button>
         </div>
@@ -403,18 +416,18 @@ export default function DashboardPage() {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-3">Navigation</p>
             {navItems.map(({ tab, icon, label, count }) => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                  activeTab === tab ? 'bg-violet-50 text-violet-700 border border-violet-200 shadow-sm' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50 border border-transparent'
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  activeTab === tab ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-xs' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50 border border-transparent'
                 }`}>
                 {icon} <span>{label}</span>
-                {count > 0 && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md font-bold border bg-violet-50 text-violet-700 border-violet-200">{count}</span>}
+                {count > 0 && <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-md font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">{count}</span>}
               </button>
             ))}
           </div>
           <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs text-slate-400 flex items-center gap-1.5"><Clock size={12} />Buffer</span>
-              <strong className="text-xs text-violet-600">30 min</strong>
+              <strong className="text-xs text-indigo-600">30 min</strong>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs text-slate-400 flex items-center gap-1.5"><BarChart3 size={12} />Channels</span>
@@ -428,45 +441,45 @@ export default function DashboardPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-5 gap-3 flex-shrink-0">
-            <div className="bg-white border border-violet-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white border border-indigo-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
                 <p className="text-xs text-slate-500 font-medium">Total Intakes</p>
-                <h3 className="text-2xl font-bold mt-0.5 text-violet-700">{conversations.length}</h3>
+                <h3 className="text-2xl font-bold mt-0.5 text-indigo-700">{conversations.length}</h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
-                <MessageSquare size={18} className="text-violet-600" />
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100">
+                <MessageSquare size={18} className="text-indigo-600" />
               </div>
             </div>
-            <div className="bg-white border border-emerald-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white border border-emerald-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
                 <p className="text-xs text-slate-500 font-medium">Confirmed Jobs</p>
                 <h3 className="text-2xl font-bold mt-0.5 text-emerald-700">{bookings.length}</h3>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100">
                 <CalendarDays size={18} className="text-emerald-600" />
               </div>
             </div>
-            <div className="bg-white border border-sky-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white border border-sky-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
                 <p className="text-xs text-slate-500 font-medium">Total Earned</p>
                 <h3 className="text-2xl font-bold mt-0.5 text-sky-700">${paymentSummary.totalEarned.toFixed(2)}</h3>
                 <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.succeededCount} paid</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center border border-sky-100">
                 <DollarSign size={18} className="text-sky-600" />
               </div>
             </div>
-            <div className="bg-white border border-amber-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white border border-amber-100 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
                 <p className="text-xs text-slate-500 font-medium">Pending Payments</p>
                 <h3 className="text-2xl font-bold mt-0.5 text-amber-700">${paymentSummary.totalPending.toFixed(2)}</h3>
                 <p className="text-[10px] text-slate-400 mt-0.5">{paymentSummary.pendingCount} awaiting</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-200">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100">
                 <TrendingUp size={18} className="text-amber-600" />
               </div>
             </div>
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs">
               <div>
                 <p className="text-xs text-slate-500 font-medium">Stripe Payouts</p>
                 <h3 className="text-sm font-bold mt-0.5 text-slate-700">{stripeStatus.onboardingComplete ? 'Active' : 'Not Setup'}</h3>
@@ -487,16 +500,16 @@ export default function DashboardPage() {
                     <button
                       onClick={refreshAll}
                       disabled={isRefreshing}
-                      className="text-xs font-semibold text-violet-600 hover:text-violet-700 flex items-center gap-1.5 transition cursor-pointer disabled:opacity-60"
+                      className="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 transition cursor-pointer disabled:opacity-60"
                     >
-                      <RefreshCw size={12} className={isRefreshing ? "animate-spin text-violet-600" : "transition-transform hover:rotate-180 duration-500"} />
+                      <RefreshCw size={12} className={isRefreshing ? "animate-spin text-indigo-600" : "transition-transform hover:rotate-180 duration-500"} />
                       {isRefreshing ? 'Refreshing...' : 'Refresh'}
                     </button>
                   </div>
                   <div className="relative">
                     <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input type="text" placeholder="Search name or phone..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100" />
+                      className={inputCls} />
                   </div>
                 </div>
                 <div className="divide-y divide-slate-100 overflow-y-auto flex-1">
@@ -507,7 +520,7 @@ export default function DashboardPage() {
                     const isWA = conv.channel === 'WHATSAPP';
                     return (
                       <div key={conv.id} onClick={() => setSelectedConversation(conv)}
-                        className={`w-full text-left p-3.5 transition-all cursor-pointer ${isSelected ? 'bg-violet-50 border-l-2 border-violet-500' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
+                        className={`w-full text-left p-3.5 transition-all cursor-pointer ${isSelected ? 'bg-indigo-50 border-l-2 border-indigo-600' : 'hover:bg-slate-50 border-l-2 border-transparent'}`}>
                         <div className="flex justify-between items-start gap-2.5">
                           <div className="flex items-center gap-2.5 min-w-0">
                             <img
@@ -530,13 +543,13 @@ export default function DashboardPage() {
                               <option value="CLOSED">CLOSED</option>
                             </select>
                             <button onClick={(e: React.MouseEvent) => { e.stopPropagation(); handleDeleteConversation(conv.id); }}
-                              className="text-slate-400 hover:text-red-500 transition p-0.5">
+                              className="text-slate-400 hover:text-red-500 transition p-0.5 cursor-pointer">
                               <Trash2 size={12} />
                             </button>
                           </div>
                         </div>
                         <div className="mt-2 flex items-center justify-between">
-                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 border ${isWA ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-violet-50 text-violet-600 border-violet-200'}`}>
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 border ${isWA ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-indigo-50 text-indigo-600 border-indigo-200'}`}>
                             <MessageSquare size={10} /> {isWA ? 'WhatsApp' : 'Web Chat'}
                           </span>
                           <span className="text-slate-400 text-[10px]">{conv.messages.length} msgs</span>
@@ -566,11 +579,11 @@ export default function DashboardPage() {
                     </div>
 
                     {selectedConversation.bookings && selectedConversation.bookings.length > 0 && (
-                      <div className="bg-gradient-to-r from-violet-50 to-indigo-50 p-3 border-b border-violet-100 flex-shrink-0 space-y-2">
-                        <p className="text-[10px] font-bold text-violet-500 uppercase tracking-widest px-1 flex items-center gap-1.5"><CalendarDays size={11} /> Bookings</p>
+                      <div className="bg-indigo-50/70 p-3 border-b border-indigo-100 flex-shrink-0 space-y-2">
+                        <p className="text-[10px] font-bold text-indigo-700 uppercase tracking-widest px-1 flex items-center gap-1.5"><CalendarDays size={11} /> Bookings</p>
                         {selectedConversation.bookings.map(b => (
-                          <div key={b.id} className="rounded-2xl bg-white border border-violet-200 shadow-sm overflow-hidden">
-                            <div className="flex items-center justify-between px-4 py-2 bg-violet-600 text-white">
+                          <div key={b.id} className="rounded-2xl bg-white border border-indigo-100 shadow-xs overflow-hidden">
+                            <div className="flex items-center justify-between px-4 py-2 bg-indigo-600 text-white">
                               <div className="flex items-center gap-2">
                                 <CheckCircle size={13} />
                                 <span className="text-xs font-bold">Booking Confirmed</span>
@@ -585,16 +598,16 @@ export default function DashboardPage() {
                             <div className="px-4 py-3 flex justify-between items-center gap-3">
                               <div className="space-y-1">
                                 <div className="flex items-center gap-1.5 text-xs text-slate-700">
-                                  <Clock size={11} className="text-violet-400" />
-                                  <span className="font-semibold">{new Date(b.slotStart).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+                                  <Clock size={11} className="text-slate-400" />
+                                  <span>{new Date(b.slotStart).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                  <CreditCard size={11} className="text-violet-400" />
+                                  <CreditCard size={11} className="text-indigo-400" />
                                   <span>Fee: <strong className="text-slate-800">${b.bookingFee}</strong></span>
                                 </div>
                               </div>
                               <button onClick={() => handleGeneratePaymentLink(b.id)} disabled={generatingPayment === b.id}
-                                className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5 shadow-sm shadow-violet-200 whitespace-nowrap">
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer">
                                 <CreditCard size={12} /> {generatingPayment === b.id ? 'Generating...' : 'Send Stripe Link'}
                               </button>
                             </div>
@@ -623,13 +636,13 @@ export default function DashboardPage() {
                               />
                             )}
                             <div className={`max-w-sm px-4 py-2.5 rounded-2xl text-xs leading-relaxed ${
-                              isCustomer ? 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-xs' : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-br-none shadow-sm shadow-violet-200'
+                              isCustomer ? 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-xs' : 'bg-indigo-600 text-white rounded-br-none shadow-xs'
                             }`}>
                               <p className="whitespace-pre-wrap">{msg.content}</p>
                               {msg.sentAt && <span className="text-[9px] opacity-50 block text-right mt-1">{new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>}
                             </div>
                             {!isCustomer && (
-                              <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 text-white flex items-center justify-center text-[9px] font-bold shadow-xs flex-shrink-0 mb-0.5">
+                              <div className="w-6 h-6 rounded-full bg-indigo-700 text-white flex items-center justify-center text-[9px] font-bold shadow-xs flex-shrink-0 mb-0.5">
                                 You
                               </div>
                             )}
@@ -642,29 +655,29 @@ export default function DashboardPage() {
                     <div className="p-3 border-t border-slate-100 bg-white flex gap-2 flex-shrink-0">
                       <input type="text" placeholder="Type response..." value={replyContent} onChange={e => setReplyContent(e.target.value)}
                         onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
-                        className="flex-1 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+                        className={inputCls}
                         disabled={sendingMessage} />
                       <button onClick={handleSendMessage} disabled={sendingMessage || !replyContent.trim()}
-                        className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5 transition">
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-semibold disabled:opacity-40 flex items-center gap-1.5 transition cursor-pointer shadow-xs">
                         <Send size={13} /> Send
                       </button>
                     </div>
 
                     <div className="p-3 border-t border-slate-100 bg-white flex gap-2 flex-shrink-0">
                       <button onClick={() => { handleFetchSlots(); setShowSlotsModal(true); }}
-                        className="flex-1 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold border border-slate-200 hover:bg-slate-200 transition flex items-center justify-center gap-1.5">
-                        <Search size={13} /> Check Slots
+                        className="flex-1 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 hover:bg-slate-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <Search size={13} className="text-rose-600" /> Check Slots
                       </button>
                       <button onClick={() => { setBookingError(''); setShowBookingModal(true); }}
-                        className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                        className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
                         <Plus size={13} /> Create Booking
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center flex flex-col items-center justify-center h-full space-y-3">
-                    <div className="w-12 h-12 rounded-2xl bg-violet-50 border border-violet-200 flex items-center justify-center">
-                      <MessageSquare size={20} className="text-violet-500" />
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+                      <MessageSquare size={20} className="text-indigo-600" />
                     </div>
                     <h3 className="text-sm font-bold text-slate-700">Select a Conversation</h3>
                     <p className="text-slate-400 text-xs max-w-xs">Click any conversation from the queue to reply or send payment links.</p>
@@ -699,7 +712,7 @@ export default function DashboardPage() {
                       <tr><td colSpan={6} className="p-8 text-center text-slate-400 text-xs">No bookings found</td></tr>
                     ) : bookings.map(b => (
                       <tr key={b.id} className="hover:bg-slate-50 transition">
-                        <td className="p-3 font-mono text-violet-600 font-bold text-xs">#{b.id.substring(0, 8)}</td>
+                        <td className="p-3 font-mono text-indigo-600 font-bold text-xs">#{b.id.substring(0, 8)}</td>
                         <td className="p-3">
                           <strong className="text-slate-700 block text-xs">{b.customer?.name || 'Customer'}</strong>
                           <span className="text-[11px] text-slate-400 font-mono">{b.customer?.phone}</span>
@@ -716,10 +729,16 @@ export default function DashboardPage() {
                           </select>
                         </td>
                         <td className="p-3">
-                          <button onClick={() => handleGeneratePaymentLink(b.id)} disabled={generatingPayment === b.id}
-                            className="bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 rounded-lg font-semibold text-xs disabled:opacity-50 transition flex items-center gap-1.5">
-                            <CreditCard size={12} /> {generatingPayment === b.id ? 'Generating...' : 'Send Link'}
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button onClick={() => handleGeneratePaymentLink(b.id)} disabled={generatingPayment === b.id}
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold text-xs disabled:opacity-50 transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+                              <CreditCard size={12} /> {generatingPayment === b.id ? 'Generating...' : 'Send Link'}
+                            </button>
+                            <button onClick={() => handleDeleteBooking(b.id)}
+                              className="bg-red-50 hover:bg-red-100 text-red-500 border border-red-200 px-2 py-1.5 rounded-lg transition cursor-pointer">
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -780,7 +799,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-slate-400 mt-0.5">Daily service coverage zones for slot availability</p>
                 </div>
                 <button onClick={() => setShowWorkAreaModal(true)}
-                  className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-xs cursor-pointer">
                   <Plus size={14} /> Add Zone
                 </button>
               </div>
@@ -789,12 +808,12 @@ export default function DashboardPage() {
                   {workAreas.length === 0 ? (
                     <div className="col-span-3 text-center py-10 text-slate-400 text-xs">No work areas configured yet.</div>
                   ) : workAreas.map(wa => (
-                    <div key={wa.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-violet-300 hover:shadow-md transition-all">
-                      <button onClick={() => handleDeleteWorkArea(wa.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition">
+                    <div key={wa.id} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-indigo-300 hover:shadow-md transition-all">
+                      <button onClick={() => handleDeleteWorkArea(wa.id)} className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition cursor-pointer">
                         <Trash2 size={13} />
                       </button>
-                      <div className="w-9 h-9 rounded-xl bg-violet-100 flex items-center justify-center">
-                        <MapPin size={18} className="text-violet-600" />
+                      <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
+                        <MapPin size={18} className="text-indigo-600" />
                       </div>
                       <h3 className="font-bold text-slate-800 text-sm">{wa.area}</h3>
                       <p className="text-xs text-slate-400">{new Date(wa.availableDate).toLocaleDateString()}</p>
@@ -850,52 +869,26 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* SLOTS MODAL */}
+      {/* SLOTS / SCHEDULE MODAL */}
       {showSlotsModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h3 className="text-sm font-bold text-slate-800">Available Slots (30m Buffer)</h3>
-            <div className="flex gap-2 items-center">
-              <div className="flex-1">
-                <DatePicker value={slotsDate} onChange={setSlotsDate} placeholder="Select date" />
-              </div>
-              <button
-                onClick={handleFetchSlots}
-                disabled={loadingSlots}
-                className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition shadow-xs flex-shrink-0"
-              >
-                {loadingSlots ? 'Loading...' : 'Check'}
-              </button>
-            </div>
-            <div className="max-h-60 overflow-y-auto space-y-2">
-              {availableSlots.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-6">No slots available or work area not set.</p>
-              ) : availableSlots.map((slot, i) => (
-                <div key={i} className="p-3 bg-slate-50 rounded-xl text-xs text-slate-700 border border-slate-200 flex justify-between items-center">
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={12} className="text-slate-400" />
-                    {new Date(slot.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} - {new Date(slot.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-                  </span>
-                  <button onClick={() => {
-                    const s = new Date(slot.start), e = new Date(slot.end);
-                    const pad = (n: number) => n.toString().padStart(2, '0');
-                    setBookingDate(s.getFullYear() + '-' + pad(s.getMonth()+1) + '-' + pad(s.getDate()));
-                    setStartTime(pad(s.getHours()) + ':' + pad(s.getMinutes()));
-                    setEndTime(pad(e.getHours()) + ':' + pad(e.getMinutes()));
-                    if (!selectedConversation && conversations.length > 0) setSelectedConversation(conversations[0]);
-                    setShowSlotsModal(false); setShowBookingModal(true);
-                  }} className="bg-violet-600 hover:bg-violet-700 text-white text-[11px] px-3 py-1.5 rounded-lg font-bold">
-                    Select
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="text-right">
-              <button onClick={() => setShowSlotsModal(false)}
-                className="px-4 py-2 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50">Close</button>
-            </div>
-          </div>
-        </div>
+        <SlotsModal
+          slotsDate={slotsDate}
+          availableSlots={availableSlots}
+          loadingSlots={loadingSlots}
+          onDateChange={setSlotsDate}
+          onFetch={(dateStr) => handleFetchSlots(dateStr)}
+          onSelectSlot={(slot: Slot) => {
+            const s = new Date(slot.start), e = new Date(slot.end);
+            const pad = (n: number) => n.toString().padStart(2, '0');
+            setBookingDate(s.getFullYear() + '-' + pad(s.getMonth() + 1) + '-' + pad(s.getDate()));
+            setStartTime(pad(s.getHours()) + ':' + pad(s.getMinutes()));
+            setEndTime(pad(e.getHours()) + ':' + pad(e.getMinutes()));
+            if (!selectedConversation && conversations.length > 0) setSelectedConversation(conversations[0]);
+            setShowSlotsModal(false);
+            setShowBookingModal(true);
+          }}
+          onClose={() => setShowSlotsModal(false)}
+        />
       )}
 
       {/* WORK AREA MODAL */}
@@ -903,7 +896,7 @@ export default function DashboardPage() {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
             <h3 className="text-sm font-bold text-slate-800">Set Work Area Zone</h3>
-            {workAreaMessage && <p className="text-xs font-semibold text-violet-600">{workAreaMessage}</p>}
+            {workAreaMessage && <p className="text-xs font-semibold text-indigo-600">{workAreaMessage}</p>}
             <form onSubmit={handleSetWorkArea} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-600 mb-1">Available Date</label>
@@ -917,7 +910,7 @@ export default function DashboardPage() {
                 <button type="button" onClick={() => setShowWorkAreaModal(false)}
                   className="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50">Close</button>
                 <button type="submit" disabled={settingWorkArea}
-                  className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-bold disabled:opacity-50">
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold disabled:opacity-50">
                   {settingWorkArea ? 'Saving...' : 'Save Zone'}
                 </button>
               </div>
