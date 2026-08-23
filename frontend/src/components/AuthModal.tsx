@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api';
 import { setCookie } from '@/lib/cookies';
+import { toast } from 'sonner';
 
 interface AuthModalProps {
   initialMode?: 'login' | 'register';
@@ -52,13 +53,18 @@ export default function AuthModal({ initialMode = 'login', onClose }: AuthModalP
           setCookie('refreshToken', refreshToken, 1);
         }
 
+        toast.success('Welcome back! Signed in successfully.');
         onClose();
         router.push('/dashboard');
       } else {
-        setError(response.message || 'Login failed. Please check credentials.');
+        const msg = response.message || 'Login failed. Please check credentials.';
+        setError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred during login');
+      const msg = err.message || 'An error occurred during login';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -79,13 +85,18 @@ export default function AuthModal({ initialMode = 'login', onClose }: AuthModalP
           setCookie('accessToken', token, 1);
         }
 
+        toast.success('Account created successfully! Welcome to TradeSlot.');
         onClose();
         router.push('/dashboard');
       } else {
-        setError(response.message || 'Registration failed. User may already exist.');
+        const msg = response.message || 'Registration failed. User may already exist.';
+        setError(msg);
+        toast.error(msg);
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred during registration');
+      const msg = err.message || 'An error occurred during registration';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

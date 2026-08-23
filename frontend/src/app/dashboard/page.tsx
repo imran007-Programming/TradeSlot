@@ -175,7 +175,9 @@ export default function DashboardPage() {
 
   const handleLogout = async () => {
     try { await apiClient.post('/auth/logout'); } catch {}
-    deleteCookie('accessToken'); deleteCookie('refreshToken'); router.push('/');
+    deleteCookie('accessToken'); deleteCookie('refreshToken');
+    toast.success('Logged out successfully.');
+    router.push('/');
   };
 
   const handleSendMessage = async () => {
@@ -205,9 +207,17 @@ export default function DashboardPage() {
         await apiClient.post(`/conversations/${selectedConversation.id}/messages`, {
           content: 'Booking Confirmed: ' + new Date(slotStart).toLocaleString() + ' (Fee: $' + bookingFee + ')',
         });
-        await refreshAll(); toast.success('Booking created!');
-      } else setBookingError(res.message || 'Failed to create booking');
-    } catch (err: any) { setBookingError(err.message); }
+        await refreshAll(); toast.success('Booking created! Travel buffer (30m) applied.');
+      } else {
+        const msg = res.message || 'Failed to create booking';
+        setBookingError(msg);
+        toast.error(msg);
+      }
+    } catch (err: any) {
+      const msg = err.message || 'Error creating booking';
+      setBookingError(msg);
+      toast.error(msg);
+    }
     finally { setCreatingBooking(false); }
   };
 
@@ -218,9 +228,9 @@ export default function DashboardPage() {
       if (res.success && res.data?.checkoutUrl) {
         if (selectedConversation) {
           await apiClient.post('/conversations/' + selectedConversation.id + '/messages', { content: 'Payment Link: ' + res.data.checkoutUrl });
-          await fetchConversations(); toast.success('Payment link sent!');
+          await fetchConversations(); toast.success('Payment link sent to customer!');
         } else toast.info('Payment link:\n\n' + res.data.checkoutUrl);
-      } else toast.error(res.message || 'Failed to generate link');
+      } else toast.error(res.message || 'Failed to generate payment link');
     } catch (err: any) { toast.error(err.message); }
     finally { setGeneratingPayment(null); }
   };
@@ -231,7 +241,12 @@ export default function DashboardPage() {
     try {
       const traderId = user?.trader?.id || selectedConversation?.traderId;
       const res = await apiClient.get('/bookings/slots/available?traderId=' + traderId + '&date=' + slotsDate);
-      if (res.success) setAvailableSlots(res.data || []);
+      if (res.success) {
+        setAvailableSlots(res.data || []);
+        if (!res.data || res.data.length === 0) {
+          toast.info('No slots available for this date');
+        }
+      }
       else toast.error(res.message || 'Could not fetch slots');
     } catch (err: any) { toast.error(err.message); }
     finally { setLoadingSlots(false); }
@@ -241,16 +256,29 @@ export default function DashboardPage() {
     e.preventDefault(); setSettingWorkArea(true); setWorkAreaMessage('');
     try {
       const res = await apiClient.post('/work-area/set-area', { availableDate: workAreaDate, area: workAreaName });
-      if (res.success) { setWorkAreaMessage('Saved!'); setWorkAreaName(''); await fetchWorkAreas(); }
-      else setWorkAreaMessage(res.message || 'Failed');
-    } catch (err: any) { setWorkAreaMessage(err.message); }
+      if (res.success) {
+        toast.success('Work area zone saved successfully!');
+        setWorkAreaName('');
+        setShowWorkAreaModal(false);
+        await fetchWorkAreas();
+      } else {
+        toast.error(res.message || 'Failed to save work area zone');
+      }
+    } catch (err: any) { toast.error(err.message || 'Error saving work area'); }
     finally { setSettingWorkArea(false); }
   };
 
   const handleDeleteWorkArea = async (id: string) => {
     if (!confirm('Delete this work area?')) return;
-    try { const res = await apiClient.delete('/work-area/' + id); if (res.success) await fetchWorkAreas(); }
-    catch (err: any) { toast.error(err.message); }
+    try {
+      const res = await apiClient.delete('/work-area/' + id);
+      if (res.success) {
+        toast.success('Work area deleted successfully!');
+        await fetchWorkAreas();
+      } else {
+        toast.error(res.message || 'Failed to delete work area');
+      }
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const handleUpdateBookingStatus = async (bookingId: string, status: string) => {
