@@ -419,7 +419,7 @@ export default function DashboardPage() {
                               <option value="BOOKED">BOOKED</option>
                               <option value="CLOSED">CLOSED</option>
                             </select>
-                            <button onClick={e => { e.stopPropagation(); handleDeleteConversation(conv.id); }}
+                            <button onClick={(e: React.MouseEvent) => { e.stopPropagation(); handleDeleteConversation(conv.id); }}
                               className="text-slate-400 hover:text-red-500 transition p-0.5">
                               <Trash2 size={12} />
                             </button>
