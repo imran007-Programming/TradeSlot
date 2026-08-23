@@ -4,6 +4,20 @@
 :root {
   --font-heading: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
+  
+  /* Fixed Brand Tokens */
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+  
+  --secondary: #10b981;
+  --secondary-hover: #059669;
+  --secondary-light: #ecfdf5;
+
+  --accent: #e11d48;
+  --accent-hover: #be123c;
+  --accent-light: #fff1f2;
+
   --background: 0 0% 100%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
@@ -12,40 +26,12 @@
   --popover-foreground: 222.2 84% 4.9%;
   --muted: 221.2 63.3% 97.8%;
   --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 222.2 47.6% 11.2%;
-  --accent-foreground: 210 40% 98%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --primary: 222.2 47.6% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 47.6% 11.2%;
-  --ring: 222.2 84% 4.9%;
-  --radius: 0.5rem;
-}
-
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.3% 65.1%;
-  --accent: 210 40% 98%;
-  --accent-foreground: 222.2 47.6% 11.2%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --primary: 210 40% 98%;
-  --primary-foreground: 222.2 47.6% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --ring: 212.7 26.8% 83.9%;
+  --ring: 243.4 75.4% 58.6%;
+  --radius: 0.75rem;
 }
 
 body {
@@ -61,7 +47,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Light Theme Glassmorphism utilities */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(226, 232, 240, 0.9);
@@ -74,8 +60,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-card:hover {
-  border-color: #6366f1;
-  box-shadow: 0 10px 25px -3px rgba(99, 102, 241, 0.12);
+  border-color: var(--primary);
+  box-shadow: 0 10px 25px -3px rgba(79, 70, 229, 0.12);
 }
 
 .glass-input {
@@ -86,7 +72,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-input:focus {
-  border-color: #4f46e5;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
@@ -116,17 +102,11 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient-cyan {
-  background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
 /* Soft Glow effects */
 .glow-primary {
-  box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.18);
 }
 
-.glow-purple {
-  box-shadow: 0 20px 40px -15px rgba(124, 58, 237, 0.15);
+.glow-secondary {
+  box-shadow: 0 20px 40px -15px rgba(16, 185, 129, 0.18);
 }
