@@ -138,7 +138,12 @@ export default function DashboardPage() {
     setConnectingStripe(true);
     try {
       const res = await apiClient.post('/traders/stripe/connect');
-      if (res.success && res.data?.onboardingUrl) window.location.href = res.data.onboardingUrl;
+      if (res.success && res.data?.onboardingUrl) {
+        const popup = window.open(res.data.onboardingUrl, '_blank');
+        const timer = setInterval(() => {
+          if (popup?.closed) { clearInterval(timer); checkStripe(); }
+        }, 1000);
+      }
       else alert(res.message || 'Failed to generate Stripe link');
     } catch (err: any) { alert(err.message); }
     finally { setConnectingStripe(false); }
