@@ -469,7 +469,7 @@ export default function DashboardPage() {
                               <div className="space-y-1">
                                 <div className="flex items-center gap-1.5 text-xs text-slate-700">
                                   <Clock size={11} className="text-violet-400" />
-                                  <span className="font-semibold">{new Date(b.slotStart).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                                  <span className="font-semibold">{new Date(b.slotStart).toLocaleString([], { dateStyle: 'medium', hour: '2-digit', minute: '2-digit', hour12: true })}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
                                   <CreditCard size={11} className="text-violet-400" />
@@ -502,7 +502,7 @@ export default function DashboardPage() {
                               isCustomer ? 'bg-white border border-slate-200 text-slate-700 rounded-bl-none' : 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-br-none'
                             }`}>
                               <p className="whitespace-pre-wrap">{msg.content}</p>
-                              {msg.sentAt && <span className="text-[9px] opacity-50 block text-right mt-1">{new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
+                              {msg.sentAt && <span className="text-[9px] opacity-50 block text-right mt-1">{new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span>}
                             </div>
                           </div>
                         );
@@ -576,7 +576,7 @@ export default function DashboardPage() {
                           <strong className="text-slate-700 block text-xs">{b.customer?.name || 'Customer'}</strong>
                           <span className="text-[11px] text-slate-400 font-mono">{b.customer?.phone}</span>
                         </td>
-                        <td className="p-3 text-slate-600 text-xs">{new Date(b.slotStart).toLocaleString()} - {new Date(b.slotEnd).toLocaleTimeString()}</td>
+                        <td className="p-3 text-slate-600 text-xs">{new Date(b.slotStart).toLocaleString([], { dateStyle: 'medium', hour: '2-digit', minute: '2-digit', hour12: true })} - {new Date(b.slotEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
                         <td className="p-3 font-bold text-slate-800 text-xs">${b.bookingFee}</td>
                         <td className="p-3">
                           <select value={b.status} onChange={e => handleUpdateBookingStatus(b.id, e.target.value)}
@@ -742,7 +742,7 @@ export default function DashboardPage() {
                 <div key={i} className="p-3 bg-slate-50 rounded-xl text-xs text-slate-700 border border-slate-200 flex justify-between items-center">
                   <span className="flex items-center gap-1.5">
                     <Clock size={12} className="text-slate-400" />
-                    {new Date(slot.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(slot.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(slot.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })} - {new Date(slot.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                   </span>
                   <button onClick={() => {
                     const s = new Date(slot.start), e = new Date(slot.end);
