@@ -16,30 +16,14 @@ const createStripeConnectAccount = async (userId: string) => {
         throw new AppError(404, "Trader not found");
     }
 
-    // Auto-create business if trader doesn't have one
     if (!trader.business) {
-        await prisma.business.create({
-            data: {
-                name: `${trader.name}'s Business`,
-                traders: { connect: { id: trader.id } },
-            },
-        });
+        throw new AppError(400, "Trader must have a business to connect Stripe");
     }
 
-    // Re-fetch to ensure business is loaded
-    const freshTrader = await prisma.trader.findUnique({
-        where: { userId },
-        include: { business: true },
-    });
-
-    if (!freshTrader?.business) throw new AppError(500, "Failed to load trader business");
-
-    const business = freshTrader.business;
-
     // If already has a connected account, verify it still exists on Stripe
-    if (business.stripeConnectedId) {
+    if (trader.business.stripeConnectedId) {
         try {
-            const existingAccount = await stripe.accounts.retrieve(business.stripeConnectedId);
+            const existingAccount = await stripe.accounts.retrieve(trader.business.stripeConnectedId);
             if (existingAccount && !existingAccount.deleted) {
                 return {
                     accountId: existingAccount.id,
@@ -61,15 +45,15 @@ const createStripeConnectAccount = async (userId: string) => {
         },
         business_type: "individual",
         metadata: {
-            traderId: freshTrader.id,
-            businessId: business.id,
+            traderId: trader.id,
+            businessId: trader.business.id,
             userId: userId,
         },
     });
 
     // Save Stripe connected account ID to Business
     await prisma.business.update({
-        where: { id: business.id },
+        where: { id: trader.business.id },
         data: { stripeConnectedId: account.id },
     });
 
