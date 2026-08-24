@@ -81,6 +81,18 @@ export default function WebChatWidget({ onClose }: Props) {
     setLoading(true);
 
     try {
+      // First fetch any existing conversation history for this customer
+      const existingRes = await fetch(
+        `${API}/channels/webchat/messages?phone=${encodeURIComponent(phone)}`
+      );
+      const existingData = await existingRes.json();
+      const prevMsgs: WebChatMessage[] =
+        existingData.success && Array.isArray(existingData.data)
+          ? existingData.data
+          : [];
+
+      setMessages([...prevMsgs, tempMsg]);
+
       const res = await fetch(`${API}/channels/webchat/message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

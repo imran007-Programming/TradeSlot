@@ -1,8 +1,55 @@
 import { stripe } from "../../lib/stripe";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/Apperror";
+import { sendWhatsAppMessage } from "../../services/ultramsg.service";
 
 const PLATFORM_FEE_CENTS = parseInt(process.env.PLATFORM_FEE_AMOUNT || "200");
+
+const sendPaymentSuccessAutoMessage = async (bookingId: string) => {
+    try {
+        const booking = await prisma.booking.findUnique({
+            where: { id: bookingId },
+            include: { customer: true, conversation: true, trader: true },
+        });
+
+        if (!booking) return;
+
+        const conversationId = booking.conversationId || booking.conversation?.id;
+        if (!conversationId) return;
+
+        const alreadySent = await prisma.message.findFirst({
+            where: {
+                conversationId,
+                content: { contains: "Payment Received!" },
+            },
+        });
+
+        if (alreadySent) return;
+
+        const autoMsg = `✅ Payment Received! Thank you for your payment of $${booking.bookingFee}. Your booking is confirmed and ongoing. Our serviceman will call you soon!`;
+
+        // 1. Create message in DB
+        await prisma.message.create({
+            data: {
+                conversationId,
+                sender: "TRADER",
+                channel: booking.conversation?.channel || "WEB_CHAT",
+                content: autoMsg,
+            },
+        });
+
+        // 2. If WhatsApp, send to customer phone
+        if (booking.conversation?.channel === "WHATSAPP" && booking.customer?.phone) {
+            const customerPhone = booking.customer.phone;
+            const toNumber = customerPhone.startsWith("+") ? customerPhone : `+${customerPhone}`;
+            await sendWhatsAppMessage(toNumber, autoMsg);
+        }
+
+        console.log(`✅ Auto payment confirmation message sent for booking ${bookingId}`);
+    } catch (err) {
+        console.error(`Failed to send auto payment confirmation message:`, err);
+    }
+};
 
 const createCheckoutSession = async (bookingId: string, userId: string) => {
     const booking = await prisma.booking.findUnique({
@@ -140,6 +187,7 @@ const handleCheckoutCompleted = async (session: any) => {
             data: { status: "CONFIRMED" },
         });
         console.log(`✅ Payment SUCCEEDED & Booking CONFIRMED: ${bookingId}`);
+        await sendPaymentSuccessAutoMessage(bookingId);
     }
 };
 
@@ -175,6 +223,7 @@ const handlePaymentSuccess = async (paymentIntent: any) => {
     });
 
     console.log(`✅ Payment SUCCEEDED for booking: ${payment.bookingId}`);
+    await sendPaymentSuccessAutoMessage(payment.bookingId);
 };
 
 const handlePaymentFailed = async (paymentIntent: any) => {
@@ -232,6 +281,7 @@ const verifyAndConfirmSession = async (sessionId: string) => {
             data: { status: "CONFIRMED" },
         });
         console.log(`✅ Session verified & Booking CONFIRMED: ${bookingId}`);
+        await sendPaymentSuccessAutoMessage(bookingId);
     }
 
     return { paid: session.payment_status === "paid", bookingId };

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Zap } from 'lucide-react';
+import Image from 'next/image';
 
 interface Props {
   onOpenAuth: (mode: 'login' | 'register') => void;
@@ -13,9 +13,13 @@ export default function Footer({ onOpenAuth, onOpenChat }: Props) {
     <footer className="bg-white py-12 text-slate-500 text-xs border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-[#E11D48] flex items-center justify-center text-white text-xs font-bold">
-            <Zap size={13} className="fill-white" />
-          </div>
+          <Image
+            src="/worker.png"
+            alt="TradeSlot"
+            width={28}
+            height={28}
+            className="w-7 h-7 object-contain"
+          />
           <p className="font-bold text-[#0F172A]">TradeSlot Platform</p>
           <span className="text-slate-400">© 2026. All rights reserved.</span>
         </div>

@@ -16,6 +16,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TradeSlot - Book Your Trusted Tradesperson",
   description: "Fast, reliable, and transparent booking through WhatsApp or web chat",
+  icons: {
+    icon: "/worker.png",
+    shortcut: "/worker.png",
+    apple: "/worker.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -48,14 +48,15 @@ export const getWebChatMessages = async (phone: string, traderId?: string) => {
     where: {
       OR: [
         { phone: cleanPhone },
-        { phone: { endsWith: cleanPhone.slice(-10) } },
+        { phone: phone },
+        ...(cleanPhone.length >= 7 ? [{ phone: { endsWith: cleanPhone.slice(-10) } }] : []),
       ],
     },
   });
 
   if (!customer) return [];
 
-  const conversation = await prisma.conversation.findFirst({
+  const conversations = await prisma.conversation.findMany({
     where: {
       customerId: customer.id,
       traderId,
@@ -65,10 +66,10 @@ export const getWebChatMessages = async (phone: string, traderId?: string) => {
         orderBy: { sentAt: "asc" },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: "asc" },
   });
 
-  return conversation?.messages || [];
+  return conversations.flatMap((c) => c.messages);
 };
 
 export const confirmWebChatBooking = async (bookingId: string, phone?: string) => {

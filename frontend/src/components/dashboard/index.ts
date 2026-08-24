@@ -5,3 +5,4 @@ export * from './customers-tab';
 export * from './bookings-tab';
 export * from './work-areas-tab';
 export * from './modals';
+export * from './messages';
