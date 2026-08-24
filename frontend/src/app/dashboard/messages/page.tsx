@@ -38,6 +38,7 @@ export default function MessagesPage() {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [slotsDate, setSlotsDate] = useState(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deletingConvId, setDeletingConvId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const fetchConversations = async () => {
@@ -231,6 +232,7 @@ export default function MessagesPage() {
       action: {
         label: 'Delete',
         onClick: async () => {
+          setDeletingConvId(convId);
           try {
             const res = await apiClient.delete(`/conversations/${convId}`);
             if (res.success) {
@@ -243,6 +245,8 @@ export default function MessagesPage() {
             }
           } catch (err: any) {
             toast.error(err.message);
+          } finally {
+            setDeletingConvId(null);
           }
         },
       },
@@ -267,6 +271,7 @@ export default function MessagesPage() {
         onSelectConversation={setSelectedConversation}
         onUpdateStatus={handleUpdateConversationStatus}
         onDeleteConversation={handleDeleteConversation}
+        deletingId={deletingConvId}
       />
 
       {/* 2. Right Panel: Active Chat View */}

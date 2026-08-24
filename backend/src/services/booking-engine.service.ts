@@ -108,6 +108,63 @@ export const processIncomingMessage = async (data: IncomingMessage) => {
   const result = await receiveMessage({ phone, name, traderId, channel, content });
   const { conversation, customer } = result;
 
+  const normalizedText = content.trim().toLowerCase();
+  const isConfirmIntent =
+    /^(confirm|yes|ok|okay|agree|book it|please book|confirmed|accepted)/i.test(normalizedText) ||
+    normalizedText.includes('confirm booking');
+
+  // Check if customer is confirming a pending booking offer
+  if (isConfirmIntent) {
+    const pendingBooking = await prisma.booking.findFirst({
+      where: {
+        customerId: customer.id,
+        traderId,
+        status: 'PENDING',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (pendingBooking) {
+      await prisma.booking.update({
+        where: { id: pendingBooking.id },
+        data: { status: 'CONFIRMED' },
+      });
+
+      await prisma.conversation.update({
+        where: { id: conversation.id },
+        data: { status: 'BOOKED' },
+      });
+
+      const dateFormatted = new Date(pendingBooking.slotStart).toLocaleDateString('en-GB', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+      const startTimeStr = new Date(pendingBooking.slotStart).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const endTimeStr = new Date(pendingBooking.slotEnd).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const confirmMsg =
+        `🎉 Booking Confirmed: ${dateFormatted} (${startTimeStr} - ${endTimeStr}) (Fee: $${pendingBooking.bookingFee}) [ID: ${pendingBooking.id}]\n\n` +
+        `Our team will reach out to you shortly!`;
+
+      await saveReply(conversation.id, confirmMsg, channel);
+
+      if (channel === Channel.WHATSAPP) {
+        const toNumber = phone.startsWith('+') ? phone : `+${phone}`;
+        await sendWhatsAppMessage(toNumber, confirmMsg);
+      }
+
+      return result;
+    }
+  }
+
   // 2. Try to detect a slot request
   const detected = detectSlotRequest(content);
   if (!detected) return result;
@@ -153,7 +210,8 @@ export const processIncomingMessage = async (data: IncomingMessage) => {
 
   // 5. Send via WhatsApp if applicable
   if (channel === Channel.WHATSAPP) {
-    await sendWhatsAppMessage(phone, replyText);
+    const toNumber = phone.startsWith('+') ? phone : `+${phone}`;
+    await sendWhatsAppMessage(toNumber, replyText);
   }
 
   return result;

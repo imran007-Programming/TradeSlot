@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Conversation } from '@/types';
-import { Search, RefreshCw, Trash2, MessageSquare } from 'lucide-react';
+import { Search, RefreshCw, Trash2, MessageSquare, Loader2 } from 'lucide-react';
 
 interface Props {
   conversations: Conversation[];
@@ -15,6 +15,7 @@ interface Props {
   onSelectConversation: (conv: Conversation) => void;
   onUpdateStatus: (convId: string, status: string) => void;
   onDeleteConversation: (convId: string) => void;
+  deletingId?: string | null;
 }
 
 export default function CustomerMessages({
@@ -27,6 +28,7 @@ export default function CustomerMessages({
   onSelectConversation,
   onUpdateStatus,
   onDeleteConversation,
+  deletingId,
 }: Props) {
   const filteredConversations = conversations.filter(
     (c) =>
@@ -127,9 +129,15 @@ export default function CustomerMessages({
                         e.stopPropagation();
                         onDeleteConversation(conv.id);
                       }}
-                      className="text-slate-400 hover:text-red-500 transition p-0.5 cursor-pointer"
+                      disabled={deletingId === conv.id}
+                      className="text-slate-400 hover:text-red-500 transition p-0.5 cursor-pointer disabled:opacity-40"
+                      title="Delete Conversation"
                     >
-                      <Trash2 size={12} />
+                      {deletingId === conv.id ? (
+                        <Loader2 size={12} className="animate-spin text-red-500" />
+                      ) : (
+                        <Trash2 size={12} />
+                      )}
                     </button>
                   </div>
                 </div>

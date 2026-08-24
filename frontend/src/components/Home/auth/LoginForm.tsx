@@ -109,6 +109,27 @@ export default function LoginForm({ onSuccess }: Props) {
         </div>
       </div>
 
+      {/* Demo Credentials Box */}
+      <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Demo Trader Account</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setFormData({ phone: '01647153126', password: '52535455' })}
+            className="text-[10px] font-bold text-[#E11D48] hover:text-[#BE123C] bg-[#FFF1F2] border border-[#E11D48]/30 px-2 py-0.5 rounded-lg transition cursor-pointer hover:bg-[#FFE4E6]"
+          >
+            Auto Fill
+          </button>
+        </div>
+        <div className="text-[11px] font-mono text-slate-600 flex justify-between items-center bg-white px-2.5 py-1.5 rounded-xl border border-slate-200">
+          <span>Phone: <strong className="text-[#0F172A]">01647153126</strong></span>
+          <span>Pass: <strong className="text-[#0F172A]">52535455</strong></span>
+        </div>
+      </div>
+
       <button
         type="submit"
         disabled={loading}

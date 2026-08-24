@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/ui/date-picker';
-import { MapPin, Plus, Trash2, Edit2, CheckCircle } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit2, CheckCircle, Loader2 } from 'lucide-react';
 import { WorkArea } from '@/types';
 import PageLoading from '@/components/dashboard/PageLoading';
 
 export default function WorkAreasPage() {
   const [workAreas, setWorkAreas] = useState<WorkArea[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showWorkAreaModal, setShowWorkAreaModal] = useState(false);
   const [editingWorkAreaId, setEditingWorkAreaId] = useState<string | null>(null);
   const [workAreaDate, setWorkAreaDate] = useState(new Date().toISOString().split('T')[0]);
@@ -96,6 +97,7 @@ export default function WorkAreasPage() {
       action: {
         label: 'Delete',
         onClick: async () => {
+          setDeletingId(id);
           try {
             const res = await apiClient.delete('/work-area/' + id);
             if (res.success) {
@@ -107,6 +109,8 @@ export default function WorkAreasPage() {
             }
           } catch (err: any) {
             toast.error(err.message);
+          } finally {
+            setDeletingId(null);
           }
         },
       },
@@ -156,10 +160,15 @@ export default function WorkAreasPage() {
                   </button>
                   <button
                     onClick={() => handleDeleteWorkArea(wa.id)}
-                    className="text-slate-400 hover:text-red-500 p-1 rounded-md hover:bg-red-50 transition cursor-pointer"
+                    disabled={deletingId === wa.id}
+                    className="text-slate-400 hover:text-red-500 p-1 rounded-md hover:bg-red-50 transition cursor-pointer disabled:opacity-40"
                     title="Delete Zone"
                   >
-                    <Trash2 size={13} />
+                    {deletingId === wa.id ? (
+                      <Loader2 size={13} className="animate-spin text-red-500" />
+                    ) : (
+                      <Trash2 size={13} />
+                    )}
                   </button>
                 </div>
                 <div className="w-9 h-9 rounded-xl bg-[#FFF1F2] flex items-center justify-center border border-[#E11D48]/30">
