@@ -89,10 +89,10 @@ export default function ActiveBookingBanner({
   if (pendingBooking) {
     return (
       <div className="bg-amber-50/70 border-b border-amber-200/80 px-4 py-2.5 flex-shrink-0">
-        <div className="flex items-center justify-between text-xs text-amber-900 bg-white px-3 py-2 rounded-xl border border-amber-200 shadow-2xs">
-          <div className="flex items-center gap-2">
-            <Clock size={15} className="text-amber-600" />
-            <span className="font-semibold">
+        <div className="flex items-center justify-between gap-3 text-xs text-amber-900 bg-white px-3 py-2 rounded-xl border border-amber-200 shadow-2xs">
+          <div className="flex items-center gap-2 min-w-0">
+            <Clock size={15} className="text-amber-600 flex-shrink-0" />
+            <span className="font-semibold truncate">
               Slot Proposed:{' '}
               {new Date(pendingBooking.slotStart).toLocaleDateString([], {
                 month: 'short',
@@ -108,18 +108,30 @@ export default function ActiveBookingBanner({
                 hour: '2-digit',
                 minute: '2-digit',
               })}
-              )
+              ) • Fee: <strong>${pendingBooking.bookingFee}</strong>
             </span>
-            <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">
+            <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider flex-shrink-0">
               Awaiting Customer
             </span>
           </div>
-          <button
-            onClick={onChangeSlot}
-            className="text-[11px] font-bold text-[#E11D48] hover:underline cursor-pointer ml-2"
-          >
-            Change Slot
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => onGeneratePaymentLink(pendingBooking.id)}
+              disabled={generatingPayment === pendingBooking.id}
+              className="bg-[#0F172A] hover:bg-[#1E293B] active:scale-98 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition disabled:opacity-50 flex items-center gap-1.5 shadow-xs whitespace-nowrap cursor-pointer"
+            >
+              <CreditCard size={12} />
+              <span>
+                {generatingPayment === pendingBooking.id ? 'Generating...' : 'Send Stripe Link'}
+              </span>
+            </button>
+            <button
+              onClick={onChangeSlot}
+              className="text-[11px] font-bold text-[#E11D48] hover:underline cursor-pointer"
+            >
+              Change Slot
+            </button>
+          </div>
         </div>
       </div>
     );
