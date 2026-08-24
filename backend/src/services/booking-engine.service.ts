@@ -29,7 +29,7 @@ const getAlternativeSlots = async (traderId: string, date: Date): Promise<string
   const existingBookings = await prisma.booking.findMany({
     where: {
       traderId,
-      status: { in: ['CONFIRMED', 'PENDING'] },
+      status: 'CONFIRMED',
       slotStart: { gte: dayStart },
       slotEnd: { lte: dayEnd },
     },
@@ -84,11 +84,11 @@ const checkSlotAvailability = async (
     return { available: false, reason: 'no_work_area' };
   }
 
-  // 3. Check buffer clash with existing bookings
+  // 3. Check buffer clash with existing confirmed bookings
   const clash = await prisma.booking.findFirst({
     where: {
       traderId,
-      status: { in: ['CONFIRMED', 'PENDING'] },
+      status: 'CONFIRMED',
       slotStart: { lt: new Date(slotEnd.getTime() + BUFFER_MINUTES * 60000) },
       slotEnd: { gt: new Date(slotStart.getTime() - BUFFER_MINUTES * 60000) },
     },

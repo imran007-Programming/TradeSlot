@@ -101,23 +101,22 @@ export default function SlotsModal({
       let available = true;
 
       if (matched) {
-        if (matched.status === 'BOOKED' || matched.available === false) {
-          status = 'BOOKED';
-          available = false;
-        } else if (matched.status === 'PAST' || isPast) {
+        if (matched.status === 'PAST' || isPast) {
           status = 'PAST';
+          available = false;
+        } else if (matched.status === 'BOOKED' || matched.available === false) {
+          status = 'BOOKED';
           available = false;
         } else {
           status = 'AVAILABLE';
           available = true;
         }
       } else {
-        // If availableSlots was returned from backend and this wasn't available
-        if (availableSlots.length > 0) {
-          status = isPast ? 'PAST' : 'BOOKED';
-          available = false;
-        } else if (isPast) {
+        if (isPast) {
           status = 'PAST';
+          available = false;
+        } else if (availableSlots.length > 0) {
+          status = 'BOOKED';
           available = false;
         }
       }
