@@ -367,9 +367,9 @@ export default function MessagesPage() {
             const s = new Date(slot.start),
               e = new Date(slot.end);
             const pad = (n: number) => n.toString().padStart(2, '0');
-            setBookingDate(s.getFullYear() + '-' + pad(s.getMonth() + 1) + '-' + pad(s.getDate()));
-            setStartTime(pad(s.getHours()) + ':' + pad(s.getMinutes()));
-            setEndTime(pad(e.getHours()) + ':' + pad(e.getMinutes()));
+            setBookingDate(s.getUTCFullYear() + '-' + pad(s.getUTCMonth() + 1) + '-' + pad(s.getUTCDate()));
+            setStartTime(pad(s.getUTCHours()) + ':' + pad(s.getUTCMinutes()));
+            setEndTime(pad(e.getUTCHours()) + ':' + pad(e.getUTCMinutes()));
             if (!selectedConversation && conversations.length > 0)
               setSelectedConversation(conversations[0]);
             setShowSlotsModal(false);

@@ -262,7 +262,7 @@ export const cancelBooking = async (bookingId: string, userId: string) => {
 
 export const getAvailableSlots = async (
   traderId: string,
-  date: Date,
+  dateInput: Date | string,
   durationMinutes: number = 60
 ) => {
   const trader = await prisma.trader.findUnique({
@@ -273,10 +273,27 @@ export const getAvailableSlots = async (
     throw new AppError(404, "Trader not found");
   }
 
-  const dayStart = new Date(date);
-  dayStart.setHours(0, 0, 0, 0);
-  const dayEnd = new Date(date);
-  dayEnd.setHours(23, 59, 59, 999);
+  let year: number, month: number, day: number;
+
+  if (typeof dateInput === "string") {
+    const cleanDate = dateInput.split("T")[0];
+    const parts = cleanDate.split("-").map(Number);
+    year = parts[0];
+    month = parts[1];
+    day = parts[2];
+  } else if (dateInput instanceof Date) {
+    year = dateInput.getUTCFullYear();
+    month = dateInput.getUTCMonth() + 1;
+    day = dateInput.getUTCDate();
+  } else {
+    const d = new Date(dateInput);
+    year = d.getUTCFullYear();
+    month = d.getUTCMonth() + 1;
+    day = d.getUTCDate();
+  }
+
+  const dayStart = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+  const dayEnd = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
 
   const workArea = await prisma.workArea.findFirst({
     where: {
@@ -300,21 +317,18 @@ export const getAvailableSlots = async (
   });
 
   const slots = [];
-  const workStart = new Date(date);
-  workStart.setHours(9, 0, 0, 0);
-  const workEnd = new Date(date);
-  workEnd.setHours(19, 0, 0, 0); // 7:00 PM
+  const workStart = new Date(Date.UTC(year, month - 1, day, 9, 0, 0));
+  const workEnd = new Date(Date.UTC(year, month - 1, day, 19, 0, 0)); // 7:00 PM
 
   let currentSlot = new Date(workStart);
   const now = new Date();
-  const isToday = dayStart.toDateString() === now.toDateString();
 
   while (
     currentSlot.getTime() + durationMinutes * 60000 <=
     workEnd.getTime()
   ) {
     const slotEnd = new Date(currentSlot.getTime() + durationMinutes * 60000);
-    const isPast = isToday && currentSlot.getTime() <= now.getTime();
+    const isPast = currentSlot.getTime() <= now.getTime();
 
     // Check if clashing with any existing booking (including 30-minute travel buffer)
     const clashingBooking = bookings.find((booking) => {
