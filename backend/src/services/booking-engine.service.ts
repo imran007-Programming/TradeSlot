@@ -165,6 +165,42 @@ export const processIncomingMessage = async (data: IncomingMessage) => {
     }
   }
 
+  // Check if customer is asking for other available slots / different time
+  const isAnotherSlotRequest =
+    /another\s+slot|different\s+time|other\s+slots|change\s+time|not\s+available|reschedule|give\s+me\s+another|available\s+slots|other\s+options|different\s+slot/i.test(
+      normalizedText
+    );
+
+  if (isAnotherSlotRequest) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const alternatives = await getAlternativeSlots(traderId, tomorrow);
+    const dateFormatted = tomorrow.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+
+    let altMsg: string;
+    if (alternatives.length > 0) {
+      altMsg =
+        `📅 *Alternative Available Slots for ${dateFormatted}:*\n\n` +
+        alternatives.map((t) => `• *${t}*`).join('\n') +
+        `\n\n🚗 *All slots include 30m travel buffer.*\n` +
+        `👉 *Reply with your preferred time (e.g. "${alternatives[0]}") or request a specific date/time!*`;
+    } else {
+      altMsg =
+        `📅 No problem! Please reply with your preferred date and time (e.g. *"Tomorrow at 2:00 PM"* or *"Friday at 11:00 AM"*) and we'll check availability for you immediately!`;
+    }
+
+    await saveReply(conversation.id, altMsg, channel);
+    if (channel === Channel.WHATSAPP) {
+      const toNumber = phone.startsWith('+') ? phone : `+${phone}`;
+      await sendWhatsAppMessage(toNumber, altMsg);
+    }
+    return result;
+  }
+
   // 2. Try to detect a slot request
   const detected = detectSlotRequest(content);
   if (!detected) return result;
