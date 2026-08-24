@@ -46,9 +46,12 @@ export default function MessagesPage() {
       if (res.success) {
         const data: Conversation[] = res.data || [];
         setConversations(data);
-        setSelectedConversation((prev) =>
-          prev ? data.find((c) => c.id === prev.id) || prev : prev
-        );
+        setSelectedConversation((prev) => {
+          if (prev) {
+            return data.find((c) => c.id === prev.id) || prev;
+          }
+          return data.length > 0 ? data[0] : null;
+        });
       }
     } catch {}
   };
