@@ -5,9 +5,11 @@ import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { MessageSquare, CreditCard, Trash2, CheckCircle } from 'lucide-react';
 import { Booking } from '@/types';
+import PageLoading from '@/components/dashboard/PageLoading';
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
   const [generatingPayment, setGeneratingPayment] = useState<string | null>(null);
 
   const fetchBookings = async () => {
@@ -16,7 +18,9 @@ export default function BookingsPage() {
       if (res.success) {
         setBookings(res.data || []);
       }
-    } catch {}
+    } catch {} finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -88,6 +92,10 @@ export default function BookingsPage() {
       cancel: { label: 'Cancel', onClick: () => {} },
     });
   };
+
+  if (loading) {
+    return <PageLoading text="Loading bookings directory..." />;
+  }
 
   return (
     <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col p-5 min-h-0">

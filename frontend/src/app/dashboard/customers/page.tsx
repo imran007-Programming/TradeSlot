@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
 import { CheckCircle } from 'lucide-react';
 import { Conversation } from '@/types';
+import PageLoading from '@/components/dashboard/PageLoading';
 
 export default function CustomersPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchConversations = async () => {
     try {
@@ -14,7 +16,9 @@ export default function CustomersPage() {
       if (res.success) {
         setConversations(res.data || []);
       }
-    } catch {}
+    } catch {} finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -37,6 +41,10 @@ export default function CustomersPage() {
       ])
     ).values()
   );
+
+  if (loading) {
+    return <PageLoading text="Loading customers directory..." />;
+  }
 
   return (
     <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col p-5 min-h-0">

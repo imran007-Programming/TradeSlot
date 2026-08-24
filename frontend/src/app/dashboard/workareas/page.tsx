@@ -6,9 +6,11 @@ import { toast } from 'sonner';
 import { DatePicker } from '@/components/ui/date-picker';
 import { MapPin, Plus, Trash2, Edit2, CheckCircle } from 'lucide-react';
 import { WorkArea } from '@/types';
+import PageLoading from '@/components/dashboard/PageLoading';
 
 export default function WorkAreasPage() {
   const [workAreas, setWorkAreas] = useState<WorkArea[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showWorkAreaModal, setShowWorkAreaModal] = useState(false);
   const [editingWorkAreaId, setEditingWorkAreaId] = useState<string | null>(null);
   const [workAreaDate, setWorkAreaDate] = useState(new Date().toISOString().split('T')[0]);
@@ -22,7 +24,9 @@ export default function WorkAreasPage() {
       if (res.success) {
         setWorkAreas(res.data || []);
       }
-    } catch {}
+    } catch {} finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -111,6 +115,10 @@ export default function WorkAreasPage() {
   };
 
   const inputCls = "w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
+
+  if (loading) {
+    return <PageLoading text="Loading work area zones..." />;
+  }
 
   return (
     <div className="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col p-5 min-h-0">

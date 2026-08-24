@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { MessageSquare } from 'lucide-react';
 import { Conversation, Slot } from '@/types';
 import SlotsModal from '@/components/dashboard/modals/SlotsModal';
+import PageLoading from '@/components/dashboard/PageLoading';
 import {
   CustomerMessages,
   ChatHeader,
@@ -245,6 +246,10 @@ export default function MessagesPage() {
       cancel: { label: 'Cancel', onClick: () => {} },
     });
   };
+
+  if (loading) {
+    return <PageLoading text="Loading customer messages..." />;
+  }
 
   return (
     <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 overflow-hidden min-h-0">
