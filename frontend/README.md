@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TradeSlot Frontend ⚡
 
-## Getting Started
+Modern, responsive web application for the **TradeSlot** on-demand tradesperson booking platform. Built with **Next.js 16 (App Router)**, **React 19**, **TypeScript**, and **Tailwind CSS v4**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Key Features
+
+* **High-Converting Landing Page:**
+  * Interactive Service Categories with dynamic prompt selectors.
+  * 30-minute buffer guarantee explanation.
+  * Customer testimonials, FAQ accordion, and customer support showcase.
+* **Live Customer WebChat Widget:**
+  * Instant intake form with name, phone number, location / postcode, and quick prompts.
+  * Automatic historical chat restoration for returning customers.
+  * Live slot proposal cards and instant Stripe checkout redirection.
+* **Trader Dashboard (Next.js Nested Routing):**
+  * `/dashboard/messages`: Customer Messages queue, real-time message stream, slot proposal sender, and Stripe link generator.
+  * `/dashboard/bookings`: Filterable directory table of all bookings with status updates, direct payment link trigger, and deletion.
+  * `/dashboard/customers`: Comprehensive customer directory.
+  * `/dashboard/workareas`: Daily service coverage zone manager with creation, editing, and deletion.
+* **Live Stripe Status Indicator:**
+  * Real-time live blinking green dot when Stripe Connect is active with a quick "Remove Account" button.
+* **Accessible Custom UI Components:**
+  * Custom `DatePicker` with past date prevention and clean spacious layout.
+  * Sonner toast notifications with custom styling.
+
+---
+
+## 🛠️ Tech Stack
+
+* **Framework:** Next.js 16 (App Router)
+* **Library:** React 19
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS v4, Lucide React Icons
+* **UI Utilities:** `@radix-ui/react-popover`, `react-day-picker`, `clsx`, `tailwind-merge`, `sonner`
+
+---
+
+## 📁 Directory Structure
+
+```
+frontend/
+├── public/
+│   ├── worker.png              # Platform logo & tab favicon
+│   ├── tools.png               # Animated loading graphic
+│   ├── images.png              # Default avatar
+│   └── customer_care_man.jpg   # Support showcase image
+├── src/
+│   ├── app/
+│   │   ├── dashboard/
+│   │   │   ├── layout.tsx      # Dashboard shell, Sidebar, Header & Stats cards
+│   │   │   ├── page.tsx        # Redirects to /dashboard/messages
+│   │   │   ├── messages/       # Messages queue & live chat panel
+│   │   │   ├── bookings/       # Bookings directory table
+│   │   │   ├── customers/      # Customers table
+│   │   │   └── workareas/      # Work Area zones grid & edit modals
+│   │   ├── payment/
+│   │   │   ├── success/        # Stripe payment success callback page
+│   │   │   └── cancel/         # Stripe payment cancellation page
+│   │   ├── globals.css         # Tailwind directives & custom CSS
+│   │   ├── layout.tsx          # Root HTML layout with Sonner Toaster
+│   │   └── page.tsx            # Main Landing Page
+│   ├── components/
+│   │   ├── Home/               # Navbar, Hero, Services, WebChat, Auth modals
+│   │   ├── dashboard/
+│   │   │   ├── messages/       # CustomerMessages, ChatHeader, ChatInputBar, etc.
+│   │   │   └── modals/         # SlotsModal, BookingModal
+│   │   └── ui/                 # DatePicker, Calendar popovers
+│   ├── lib/
+│   │   ├── api.ts              # Fetch wrapper with auto Authorization headers
+│   │   ├── cookies.ts          # Client-side cookie handlers
+│   │   └── utils.ts            # ClassName merging utilities
+│   └── types/                  # TypeScript interfaces (Booking, Message, etc.)
+└── package.json
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ⚙️ Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file in the `frontend/` directory:
 
-## Learn More
+```env
+# Backend API Base URL
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏃 Running Locally
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# 1. Install dependencies
+npm install
 
-## Deploy on Vercel
+# 2. Run development server
+npm run dev
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 3. Build for production
+npm run build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 4. Start production build
+npm run start
+```
+
+Access the app at: `http://localhost:3000`
