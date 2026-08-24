@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '@/lib/api';
 import { toast } from 'sonner';
 import { DatePicker } from '@/components/ui/date-picker';
-import { MapPin, Plus, Trash2, CheckCircle } from 'lucide-react';
+import { MapPin, Plus, Trash2, Edit2, CheckCircle } from 'lucide-react';
 import { WorkArea } from '@/types';
 
 export default function WorkAreasPage() {
   const [workAreas, setWorkAreas] = useState<WorkArea[]>([]);
   const [showWorkAreaModal, setShowWorkAreaModal] = useState(false);
+  const [editingWorkAreaId, setEditingWorkAreaId] = useState<string | null>(null);
   const [workAreaDate, setWorkAreaDate] = useState(new Date().toISOString().split('T')[0]);
   const [workAreaName, setWorkAreaName] = useState('');
   const [settingWorkArea, setSettingWorkArea] = useState(false);
@@ -28,23 +29,56 @@ export default function WorkAreasPage() {
     fetchWorkAreas();
   }, []);
 
-  const handleSetWorkArea = async (e: React.FormEvent) => {
+  const handleOpenAddModal = () => {
+    setEditingWorkAreaId(null);
+    setWorkAreaDate(new Date().toISOString().split('T')[0]);
+    setWorkAreaName('');
+    setWorkAreaMessage('');
+    setShowWorkAreaModal(true);
+  };
+
+  const handleOpenEditModal = (wa: WorkArea) => {
+    setEditingWorkAreaId(wa.id);
+    setWorkAreaDate(new Date(wa.availableDate).toISOString().split('T')[0]);
+    setWorkAreaName(wa.area);
+    setWorkAreaMessage('');
+    setShowWorkAreaModal(true);
+  };
+
+  const handleSaveWorkArea = async (e: React.FormEvent) => {
     e.preventDefault();
     setSettingWorkArea(true);
     setWorkAreaMessage('');
     try {
-      const res = await apiClient.post('/work-area/set-area', {
-        availableDate: workAreaDate,
-        area: workAreaName,
-      });
-      if (res.success) {
-        toast.success('Work area zone saved successfully!');
-        setWorkAreaName('');
-        setShowWorkAreaModal(false);
-        await fetchWorkAreas();
-        window.dispatchEvent(new Event('dashboard:refresh'));
+      if (editingWorkAreaId) {
+        const res = await apiClient.patch('/work-area/' + editingWorkAreaId, {
+          availableDate: workAreaDate,
+          area: workAreaName,
+        });
+        if (res.success) {
+          toast.success('Work area zone updated successfully!');
+          setWorkAreaName('');
+          setEditingWorkAreaId(null);
+          setShowWorkAreaModal(false);
+          await fetchWorkAreas();
+          window.dispatchEvent(new Event('dashboard:refresh'));
+        } else {
+          toast.error(res.message || 'Failed to update work area zone');
+        }
       } else {
-        toast.error(res.message || 'Failed to save work area zone');
+        const res = await apiClient.post('/work-area/set-area', {
+          availableDate: workAreaDate,
+          area: workAreaName,
+        });
+        if (res.success) {
+          toast.success('Work area zone saved successfully!');
+          setWorkAreaName('');
+          setShowWorkAreaModal(false);
+          await fetchWorkAreas();
+          window.dispatchEvent(new Event('dashboard:refresh'));
+        } else {
+          toast.error(res.message || 'Failed to save work area zone');
+        }
       }
     } catch (err: any) {
       toast.error(err.message || 'Error saving work area');
@@ -86,7 +120,7 @@ export default function WorkAreasPage() {
           <p className="text-xs text-slate-400 mt-0.5">Daily service coverage zones for slot availability</p>
         </div>
         <button
-          onClick={() => setShowWorkAreaModal(true)}
+          onClick={handleOpenAddModal}
           className="bg-[#E11D48] hover:bg-[#BE123C] text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
         >
           <Plus size={14} /> Add Zone
@@ -102,14 +136,24 @@ export default function WorkAreasPage() {
             workAreas.map((wa) => (
               <div
                 key={wa.id}
-                className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-[#E11D48] hover:shadow-md transition-all"
+                className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 relative hover:border-[#E11D48] hover:shadow-md transition-all group"
               >
-                <button
-                  onClick={() => handleDeleteWorkArea(wa.id)}
-                  className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition cursor-pointer"
-                >
-                  <Trash2 size={13} />
-                </button>
+                <div className="absolute top-3 right-3 flex items-center gap-1">
+                  <button
+                    onClick={() => handleOpenEditModal(wa)}
+                    className="text-slate-400 hover:text-[#0F172A] p-1 rounded-md hover:bg-slate-200/60 transition cursor-pointer"
+                    title="Edit Zone"
+                  >
+                    <Edit2 size={13} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteWorkArea(wa.id)}
+                    className="text-slate-400 hover:text-red-500 p-1 rounded-md hover:bg-red-50 transition cursor-pointer"
+                    title="Delete Zone"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
                 <div className="w-9 h-9 rounded-xl bg-[#FFF1F2] flex items-center justify-center border border-[#E11D48]/30">
                   <MapPin size={18} className="text-[#E11D48]" />
                 </div>
@@ -124,13 +168,15 @@ export default function WorkAreasPage() {
         </div>
       </div>
 
-      {/* WORK AREA MODAL */}
+      {/* WORK AREA MODAL (ADD / EDIT) */}
       {showWorkAreaModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-4 text-[#0F172A]">
-            <h3 className="text-base font-bold text-[#0F172A]">Set Work Area Zone</h3>
+            <h3 className="text-base font-bold text-[#0F172A]">
+              {editingWorkAreaId ? 'Update Work Area Zone' : 'Set Work Area Zone'}
+            </h3>
             {workAreaMessage && <p className="text-xs font-bold text-[#E11D48]">{workAreaMessage}</p>}
-            <form onSubmit={handleSetWorkArea} className="space-y-4">
+            <form onSubmit={handleSaveWorkArea} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">Available Date</label>
                 <DatePicker value={workAreaDate} onChange={setWorkAreaDate} placeholder="Select zone date" />
@@ -149,7 +195,10 @@ export default function WorkAreasPage() {
               <div className="flex justify-end gap-3 pt-1">
                 <button
                   type="button"
-                  onClick={() => setShowWorkAreaModal(false)}
+                  onClick={() => {
+                    setShowWorkAreaModal(false);
+                    setEditingWorkAreaId(null);
+                  }}
                   className="px-4 py-2.5 border border-slate-200 text-slate-500 rounded-xl text-xs font-semibold hover:bg-slate-50 cursor-pointer"
                 >
                   Close
@@ -159,7 +208,13 @@ export default function WorkAreasPage() {
                   disabled={settingWorkArea}
                   className="px-5 py-2.5 bg-[#E11D48] hover:bg-[#BE123C] text-white rounded-xl text-xs font-bold disabled:opacity-50 transition shadow-sm cursor-pointer"
                 >
-                  {settingWorkArea ? 'Saving...' : 'Save Zone'}
+                  {settingWorkArea
+                    ? editingWorkAreaId
+                      ? 'Updating...'
+                      : 'Saving...'
+                    : editingWorkAreaId
+                    ? 'Update Zone'
+                    : 'Save Zone'}
                 </button>
               </div>
             </form>
