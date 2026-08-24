@@ -43,6 +43,22 @@ export const createBooking = async (data: ICreateBooking) => {
     throw new AppError(400, "Slot start time must be before end time");
   }
 
+  const dayStart = new Date(start);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(start);
+  dayEnd.setHours(23, 59, 59, 999);
+
+  const workArea = await prisma.workArea.findFirst({
+    where: {
+      traderId,
+      availableDate: { gte: dayStart, lte: dayEnd },
+    },
+  });
+
+  if (!workArea) {
+    throw new AppError(400, "No work area zone is configured for this date. Please set a work area first.");
+  }
+
   const existingBooking = await prisma.booking.findFirst({
     where: {
       traderId,

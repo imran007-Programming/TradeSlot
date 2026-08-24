@@ -100,6 +100,15 @@ export default function SlotsModal({
       let status: 'AVAILABLE' | 'BOOKED' | 'PAST' = 'AVAILABLE';
       let available = true;
 
+      if (availableSlots.length === 0) {
+        return {
+          start: startIso,
+          end: endIso,
+          available: false,
+          status: isPast ? ('PAST' as const) : ('BOOKED' as const),
+        };
+      }
+
       if (matched) {
         if (matched.status === 'PAST' || isPast) {
           status = 'PAST';
@@ -115,7 +124,7 @@ export default function SlotsModal({
         if (isPast) {
           status = 'PAST';
           available = false;
-        } else if (availableSlots.length > 0) {
+        } else {
           status = 'BOOKED';
           available = false;
         }
@@ -302,10 +311,10 @@ export default function SlotsModal({
           )}
 
           {!loadingSlots && availableSlots.length === 0 && (
-            <div className="p-3.5 bg-[#FFF1F2] border border-[#E11D48]/30 rounded-2xl text-center flex items-center justify-center gap-2">
-              <AlertCircle size={15} className="text-[#E11D48] flex-shrink-0" />
-              <p className="text-xs text-[#E11D48] font-bold">
-                Note: No custom work area zone was set for this date yet. Default standard hours are shown.
+            <div className="p-3.5 bg-red-50 border border-red-200 rounded-2xl text-center flex items-center justify-center gap-2">
+              <AlertCircle size={16} className="text-red-600 flex-shrink-0" />
+              <p className="text-xs text-red-700 font-bold">
+                No work area zone is configured for this date. You cannot book slots until a work area zone is set.
               </p>
             </div>
           )}

@@ -19,6 +19,7 @@ export default function WebChatWidget({ onClose }: Props) {
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [location, setLocation] = useState("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<WebChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -63,9 +64,13 @@ export default function WebChatWidget({ onClose }: Props) {
     setError("");
     setStep("chat");
 
-    const initialText = selectedPrompt
+    const baseMsg = selectedPrompt
       ? selectedPrompt.defaultMsg
       : "Hi, I need assistance with a trade booking.";
+
+    const initialText = location.trim()
+      ? `📍 Location: ${location.trim()}\n${baseMsg}`
+      : baseMsg;
 
     const tempMsg: WebChatMessage = {
       id: `temp-${Date.now()}`,
@@ -220,6 +225,8 @@ export default function WebChatWidget({ onClose }: Props) {
           setName={setName}
           phone={phone}
           setPhone={setPhone}
+          location={location}
+          setLocation={setLocation}
           selectedPrompt={selectedPrompt}
           setSelectedPrompt={setSelectedPrompt}
           error={error}

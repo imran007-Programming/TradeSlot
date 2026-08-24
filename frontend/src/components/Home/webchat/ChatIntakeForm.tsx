@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { User, Phone, ArrowRight, ChevronRight, AlertCircle, PenLine, Lock, Sparkles } from 'lucide-react';
+import { User, Phone, MapPin, ArrowRight, ChevronRight, AlertCircle, PenLine, Lock, Sparkles } from 'lucide-react';
 import { QuickPrompt } from '@/types/home';
 import { QUICK_PROMPTS } from '@/data';
 
@@ -11,6 +11,8 @@ interface Props {
   setName: (v: string) => void;
   phone: string;
   setPhone: (v: string) => void;
+  location: string;
+  setLocation: (v: string) => void;
   selectedPrompt: QuickPrompt | null;
   setSelectedPrompt: (prompt: QuickPrompt | null) => void;
   error: string;
@@ -22,6 +24,8 @@ export default function ChatIntakeForm({
   setName,
   phone,
   setPhone,
+  location,
+  setLocation,
   selectedPrompt,
   setSelectedPrompt,
   error,
@@ -200,6 +204,22 @@ export default function ChatIntakeForm({
                     placeholder="e.g. 07123456789"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#E11D48]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-600 mb-1">
+                  Your Location / Postcode
+                </label>
+                <div className="relative">
+                  <MapPin size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#E11D48]" />
+                  <input
+                    type="text"
+                    placeholder="e.g. Camden, North London or Postcode"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#E11D48]"
                   />
                 </div>
