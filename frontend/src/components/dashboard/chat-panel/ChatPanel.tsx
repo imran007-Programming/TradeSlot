@@ -45,7 +45,7 @@ export default function ChatPanel({
     );
   }
 
-  const isWA = conversation.channel === "WHATSAPP";
+  const isWHATSAPP = conversation.channel === "WHATSAPP";
   const bookings: Booking[] = conversation.bookings || [];
 
   return (
@@ -67,12 +67,12 @@ export default function ChatPanel({
               </h3>
               <span
                 className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                  isWA
+                  isWHATSAPP
                     ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                     : "bg-slate-100 text-slate-700 border-slate-200"
                 }`}
               >
-                {isWA ? "WhatsApp" : "Web Chat"}
+                {isWHATSAPP ? "WhatsApp" : "Web Chat"}
               </span>
             </div>
             <p className="text-xs text-slate-400 font-mono">
@@ -182,7 +182,7 @@ export default function ChatPanel({
             <div className="bg-amber-50/70 border-b border-amber-200/80 px-4 py-2.5 shrink-0">
               <div className="flex items-center justify-between text-xs text-amber-900 bg-white px-3 py-2 rounded-xl border border-amber-200 shadow-2xs">
                 <div className="flex items-center gap-2">
-                  <span>⏳</span>
+                  <Clock size={15} className="text-amber-600" />
                   <span className="font-semibold">
                     Slot Proposed:{" "}
                     {new Date(pendingBooking.slotStart).toLocaleDateString([], {

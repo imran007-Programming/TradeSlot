@@ -58,7 +58,7 @@ export default function ConversationList({
             No conversations found.
           </div>
         ) : (
-          conversations.map((conv: any) => {
+          conversations.map((conv: Conversation) => {
             const isSelected = selectedConversation?.id === conv.id;
             const isWA = conv.channel === "WHATSAPP";
             return (
