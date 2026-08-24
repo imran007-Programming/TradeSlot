@@ -4,25 +4,8 @@ import React, { useState, useRef, useMemo } from 'react';
 import { ChevronRight, ChevronLeft, Loader2, Clock, Car, AlertCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { Slot } from '@/types';
-export type { Slot };
-
-interface Props {
-  slotsDate: string;
-  availableSlots: Slot[];
-  loadingSlots: boolean;
-  onDateChange: (dateStr: string) => void;
-  onFetch: (dateStr?: string) => void;
-  onSelectSlot: (slot: Slot) => void;
-  onClose: () => void;
-}
-
-interface DayItem {
-  dateStr: string;
-  dayNum: string;
-  dayName: string;
-  isToday: boolean;
-}
+import { Slot, SlotsModalProps, DayItem } from '@/types/dashboard';
+export type { Slot, SlotsModalProps, DayItem };
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -47,7 +30,7 @@ export default function SlotsModal({
   onFetch,
   onSelectSlot,
   onClose,
-}: Props) {
+}: SlotsModalProps) {
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 

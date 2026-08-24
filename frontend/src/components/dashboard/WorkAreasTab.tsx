@@ -1,15 +1,9 @@
 'use client';
 
-import { WorkArea } from '@/types/dashboard';
+import { WorkArea, WorkAreasTabProps } from '@/types/dashboard';
 import { MapPin, Plus, Trash2, CheckCircle } from 'lucide-react';
 
-interface Props {
-  workAreas: WorkArea[];
-  onAdd: () => void;
-  onDelete: (id: string) => void;
-}
-
-export default function WorkAreasTab({ workAreas, onAdd, onDelete }: Props) {
+export default function WorkAreasTab({ workAreas, onAdd, onDelete }: WorkAreasTabProps) {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">

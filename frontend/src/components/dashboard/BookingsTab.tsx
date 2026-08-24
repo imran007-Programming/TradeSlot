@@ -1,21 +1,14 @@
 'use client';
 
-import { Booking } from '@/types/dashboard';
+import { Booking, BookingsTabProps } from '@/types/dashboard';
 import { CreditCard, CalendarDays, CheckCircle } from 'lucide-react';
-
-interface Props {
-  bookings: Booking[];
-  onGeneratePayment: (bookingId: string) => void;
-  generatingPayment: string | null;
-  onUpdateStatus: (bookingId: string, status: string) => void;
-}
 
 export default function BookingsTab({
   bookings,
   onGeneratePayment,
   generatingPayment,
   onUpdateStatus,
-}: Props) {
+}: BookingsTabProps) {
   if (bookings.length === 0) {
     return (
       <div className="p-12 text-center text-slate-400 text-xs">

@@ -1,22 +1,7 @@
 'use client';
 
 import { DatePicker } from '@/components/ui/date-picker';
-
-interface Props {
-  customerName?: string;
-  bookingError: string;
-  bookingDate: string;
-  startTime: string;
-  endTime: string;
-  bookingFee: string;
-  creatingBooking: boolean;
-  onBookingDateChange: (v: string) => void;
-  onStartTimeChange: (v: string) => void;
-  onEndTimeChange: (v: string) => void;
-  onBookingFeeChange: (v: string) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  onClose: () => void;
-}
+import { BookingModalProps } from '@/types/dashboard';
 
 const inputCls = "w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#E11D48] focus:ring-2 focus:ring-[#E11D48]/20";
 
@@ -34,7 +19,7 @@ export default function BookingModal({
   onBookingFeeChange,
   onSubmit,
   onClose,
-}: Props) {
+}: BookingModalProps) {
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
       <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5 text-[#0F172A]">

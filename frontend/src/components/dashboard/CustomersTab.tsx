@@ -2,11 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Customer } from '@/types/dashboard';
-
-interface CustomersTabProps {
-  customers: Customer[];
-}
+import { Customer, CustomersTabProps } from '@/types/dashboard';
 
 export default function CustomersTab({ customers }: CustomersTabProps) {
   if (customers.length === 0) {
