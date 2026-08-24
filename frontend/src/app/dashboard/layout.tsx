@@ -47,6 +47,15 @@ export default function DashboardLayout({
   const [bookingsCount, setBookingsCount] = useState(0);
   const [customersCount, setCustomersCount] = useState(0);
   const [workAreasCount, setWorkAreasCount] = useState(0);
+  const [isRouteChanging, setIsRouteChanging] = useState(false);
+
+  useEffect(() => {
+    setIsRouteChanging(true);
+    const timer = setTimeout(() => {
+      setIsRouteChanging(false);
+    }, 280);
+    return () => clearTimeout(timer);
+  }, [pathname]);
 
   // Work area modal from header
   const [showWorkAreaModal, setShowWorkAreaModal] = useState(false);
@@ -517,7 +526,27 @@ export default function DashboardLayout({
           </div>
 
           {/* Tab Content */}
-          <div className="flex-1 overflow-hidden min-h-0 flex flex-col">
+          <div className="flex-1 overflow-hidden min-h-0 flex flex-col relative">
+            {isRouteChanging && (
+              <div className="absolute inset-0 bg-white/75 backdrop-blur-xs z-30 rounded-2xl flex items-center justify-center transition-all animate-fadeIn">
+                <div className="text-center space-y-2">
+                  <div className="relative w-12 h-12 mx-auto flex items-center justify-center">
+                    <Image
+                      src="/tools.png"
+                      alt="Loading..."
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 object-contain animate-bounce"
+                      priority
+                    />
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-500 tracking-tight flex items-center justify-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#E11D48] animate-ping" />
+                    <span>Loading...</span>
+                  </p>
+                </div>
+              </div>
+            )}
             {children}
           </div>
         </main>
