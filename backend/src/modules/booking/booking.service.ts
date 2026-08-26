@@ -292,8 +292,8 @@ export const getAvailableSlots = async (
     day = d.getUTCDate();
   }
 
-  const dayStart = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
-  const dayEnd = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999));
+  const dayStart = new Date(year, month - 1, day, 0, 0, 0, 0);
+  const dayEnd = new Date(year, month - 1, day, 23, 59, 59, 999);
 
   const workArea = await prisma.workArea.findFirst({
     where: {
@@ -317,8 +317,8 @@ export const getAvailableSlots = async (
   });
 
   const slots = [];
-  const workStart = new Date(Date.UTC(year, month - 1, day, 9, 0, 0));
-  const workEnd = new Date(Date.UTC(year, month - 1, day, 19, 0, 0)); // 7:00 PM
+  const workStart = new Date(year, month - 1, day, 9, 0, 0, 0);
+  const workEnd = new Date(year, month - 1, day, 19, 0, 0, 0); // 7:00 PM
 
   let currentSlot = new Date(workStart);
   const now = new Date();

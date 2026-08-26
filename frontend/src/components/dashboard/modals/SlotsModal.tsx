@@ -7,11 +7,13 @@ import { toast } from 'sonner';
 import { Slot, SlotsModalProps, DayItem } from '@/types/dashboard';
 export type { Slot, SlotsModalProps, DayItem };
 
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'UTC' });
+const fmt = (iso: string) => {
+  const d = new Date(iso);
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+};
 
 // Standard 1-hour slots with 30-minute travel buffers in between (90-minute progression)
-// 09:00-10:00 -> buffer 30m -> 10:30-11:30 -> buffer 30m -> 12:00-01:00 -> buffer 30m -> 01:30-02:30 -> etc.
+// 09:00-10:00 -> buffer 30m -> 10:30-11:30 -> buffer 30m -> 12:00-01:00 -> buffer 30m -> 01:30-02:30 -> 03:00-04:00 -> 04:30-05:30 -> 06:00-07:00
 const STANDARD_SLOT_WINDOWS = [
   { startH: 9, startM: 0, endH: 10, endM: 0 },
   { startH: 10, startM: 30, endH: 11, endM: 30 },
@@ -80,23 +82,25 @@ export default function SlotsModal({
 
   // Build slots list with 30-minute buffer progression
   const fullSlotsList = useMemo(() => {
-    const pad = (n: number) => n.toString().padStart(2, '0');
     const now = new Date();
-    const isToday = slotsDate === new Date().toISOString().split('T')[0];
+    const [year, month, day] = slotsDate.split('-').map(Number);
 
     return STANDARD_SLOT_WINDOWS.map((sw) => {
-      const startIso = `${slotsDate}T${pad(sw.startH)}:${pad(sw.startM)}:00.000Z`;
-      const endIso = `${slotsDate}T${pad(sw.endH)}:${pad(sw.endM)}:00.000Z`;
-      const slotStartTime = new Date(startIso).getTime();
+      const startDate = new Date(year, month - 1, day, sw.startH, sw.startM, 0, 0);
+      const endDate = new Date(year, month - 1, day, sw.endH, sw.endM, 0, 0);
+      const startIso = startDate.toISOString();
+      const endIso = endDate.toISOString();
 
-      const isPast = isToday && slotStartTime <= now.getTime();
+      const isPast = startDate.getTime() <= now.getTime();
 
-      // Match backend returned slot (checking both UTC and local hours to handle server timezone differences)
+      // Match backend returned slot by checking timestamps or hour/min
       const matched = availableSlots.find((s) => {
         const sStart = new Date(s.start);
-        const utcMatch = sStart.getUTCHours() === sw.startH && sStart.getUTCMinutes() === sw.startM;
+        const timeDiff = Math.abs(sStart.getTime() - startDate.getTime());
+        if (timeDiff < 5 * 60 * 1000) return true;
         const localMatch = sStart.getHours() === sw.startH && sStart.getMinutes() === sw.startM;
-        return utcMatch || localMatch;
+        const utcMatch = sStart.getUTCHours() === sw.startH && sStart.getUTCMinutes() === sw.startM;
+        return localMatch || utcMatch;
       });
 
       let status: 'AVAILABLE' | 'BOOKED' | 'PAST' = 'AVAILABLE';

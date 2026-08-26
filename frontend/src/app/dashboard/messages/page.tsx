@@ -54,7 +54,7 @@ export default function MessagesPage() {
           return data.length > 0 ? data[0] : null;
         });
       }
-    } catch {}
+    } catch { }
   };
 
   const fetchUserData = async () => {
@@ -63,7 +63,7 @@ export default function MessagesPage() {
       if (res.success && res.data) {
         setUser(res.data);
       }
-    } catch {}
+    } catch { }
   };
 
   const refreshAll = async () => {
@@ -85,7 +85,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (loading) return;
-    const interval = setInterval(fetchConversations, 4000);
+    const interval = setInterval(fetchConversations, 3000);
     return () => clearInterval(interval);
   }, [loading]);
 
@@ -98,6 +98,7 @@ export default function MessagesPage() {
     const content = replyContent.trim();
     setReplyContent('');
     setSendingMessage(true);
+
     try {
       const res = await apiClient.post(`/conversations/${selectedConversation.id}/messages`, {
         content,
@@ -122,8 +123,12 @@ export default function MessagesPage() {
     setCreatingBooking(true);
     setBookingError('');
     try {
-      const slotStart = new Date(`${bookingDate}T${startTime}:00`).toISOString();
-      const slotEnd = new Date(`${bookingDate}T${endTime}:00`).toISOString();
+      const [year, month, day] = bookingDate.split('-').map(Number);
+      const [startH, startM] = startTime.split(':').map(Number);
+      const [endH, endM] = endTime.split(':').map(Number);
+      const slotStart = new Date(year, month - 1, day, startH, startM, 0, 0).toISOString();
+      const slotEnd = new Date(year, month - 1, day, endH, endM, 0, 0).toISOString();
+
       const res = await apiClient.post('/bookings/from-conversation', {
         conversationId: selectedConversation.id,
         slotStart,
@@ -147,7 +152,7 @@ export default function MessagesPage() {
           minute: '2-digit',
         });
         await apiClient.post(`/conversations/${selectedConversation.id}/messages`, {
-          content: `Booking Offer: ${formattedDate} (${startTimeStr} - ${endTimeStr}) (Fee: $${bookingFee}) [ID: ${res.data.id}]`,
+          content: `Booking Offer: ${formattedDate} (${startTimeStr} - ${endTimeStr}) (Fee: $${bookingFee})`,
         });
         await fetchConversations();
         toast.success('Slot proposal sent to customer! Awaiting customer confirmation.');
@@ -250,7 +255,7 @@ export default function MessagesPage() {
           }
         },
       },
-      cancel: { label: 'Cancel', onClick: () => {} },
+      cancel: { label: 'Cancel', onClick: () => { } },
     });
   };
 
@@ -367,9 +372,9 @@ export default function MessagesPage() {
             const s = new Date(slot.start),
               e = new Date(slot.end);
             const pad = (n: number) => n.toString().padStart(2, '0');
-            setBookingDate(s.getUTCFullYear() + '-' + pad(s.getUTCMonth() + 1) + '-' + pad(s.getUTCDate()));
-            setStartTime(pad(s.getUTCHours()) + ':' + pad(s.getUTCMinutes()));
-            setEndTime(pad(e.getUTCHours()) + ':' + pad(e.getUTCMinutes()));
+            setBookingDate(s.getFullYear() + '-' + pad(s.getMonth() + 1) + '-' + pad(s.getDate()));
+            setStartTime(pad(s.getHours()) + ':' + pad(s.getMinutes()));
+            setEndTime(pad(e.getHours()) + ':' + pad(e.getMinutes()));
             if (!selectedConversation && conversations.length > 0)
               setSelectedConversation(conversations[0]);
             setShowSlotsModal(false);
