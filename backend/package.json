@@ -5,12 +5,12 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "npx prisma generate --schema=prisma/models && npx prisma migrate deploy --schema=prisma/models && npx tsc",
+    "build": "node ./node_modules/prisma/build/index.js generate --schema=prisma/models && node ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/models && node ./node_modules/typescript/lib/tsc.js",
     "start": "node dist/server.js",
-    "migrate:deploy": "npx prisma migrate deploy --schema=prisma/models",
-    "db:generate": "npx prisma generate --schema=prisma/models",
-    "db:migrate": "npx prisma migrate dev --schema=prisma/models",
-    "db:reset": "npx prisma migrate reset --schema=prisma/models"
+    "migrate:deploy": "node ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/models",
+    "db:generate": "node ./node_modules/prisma/build/index.js generate --schema=prisma/models",
+    "db:migrate": "node ./node_modules/prisma/build/index.js migrate dev --schema=prisma/models",
+    "db:reset": "node ./node_modules/prisma/build/index.js migrate reset --schema=prisma/models"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
