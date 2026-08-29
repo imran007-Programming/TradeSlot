@@ -16,9 +16,15 @@ const getAuthHeaders = () => {
 // Refresh accessToken using refreshToken cookie
 const refreshAccessToken = async (): Promise<boolean> => {
   try {
+    const refreshToken = getCookie('refreshToken');
+    if (!refreshToken) return false;
+
     const response = await fetch(`${API_URL}/auth/refresh-token`, {
       method: 'POST',
       credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${refreshToken}`,
+      },
     });
     const data = await response.json();
     if (data.success && data.data?.accessToken) {
@@ -60,7 +66,7 @@ const fetchWithAuth = async (url: string, options: RequestInit): Promise<any> =>
       deleteCookie('accessToken');
       deleteCookie('refreshToken');
       if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
   }
