@@ -95,7 +95,10 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
 
 const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies?.refreshToken;
+        // Accept from httpOnly cookie OR Authorization header (for cross-origin)
+        const authHeader = req.headers.authorization;
+        const token = req.cookies?.refreshToken ||
+            (authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null);
 
         if (!token) {
             throw new AppError(401, 'Refresh token not found');
@@ -111,6 +114,7 @@ const refreshToken = async (req: Request, res: Response, next: NextFunction) => 
         res.cookie("accessToken", newTokens.accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 15 * 60 * 1000, // 15 minutes
         });
 
