@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { apiClient } from "@/lib/api";
-import { getCookie, deleteCookie } from "@/lib/cookies";
+import { deleteCookie } from "@/lib/cookies";
 import { toast } from "sonner";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
@@ -119,20 +119,18 @@ export default function DashboardLayout({
   };
 
   useEffect(() => {
-    const token = getCookie("accessToken");
     const init = async () => {
       try {
         const res = await apiClient.get("/auth/me");
         if (res.success && res.data) {
           setUser(res.data);
           await refreshLayoutData();
-        } else if (!token) {
-          router.push("/");
         } else {
-          await refreshLayoutData();
+          // API failed even after refresh attempt → go to login
+          router.push("/");
         }
       } catch {
-        if (!token) router.push("/");
+        router.push("/");
       } finally {
         setLoading(false);
       }
