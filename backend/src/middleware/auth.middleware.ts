@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { sendResponse } from '../utils/response';
 import { AppError } from '../utils/Apperror';
 import { verifyToken } from '../utils/generateToken';
-import { Role } from '@prisma/client';
 import { JwtPayload } from 'jsonwebtoken';
 
 declare global {
@@ -28,9 +26,12 @@ const authGuard = (req: Request, res: Response, next: NextFunction) => {
             role: decode.role
         };
         next();
-    } catch (error) {
-        next(new AppError(401, 'Invalid token'));
+    } catch (error: any) {
+        if (error.name === 'TokenExpiredError') {
+            return next(new AppError(401, 'Token expired'));
+        }
+        return next(new AppError(401, 'Invalid token'));
     }
 };
 
-export default authGuard;
+export default authGuard;

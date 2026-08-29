@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { sendResponse } from "../../utils/response";
 import { AppError } from "../../utils/Apperror";
 import { authService } from "./auth.service";
+import { generateToken, verifyRefreshToken } from "../../utils/generateToken";
+
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -91,9 +93,45 @@ const logout = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const token = req.cookies?.refreshToken;
+
+        if (!token) {
+            throw new AppError(401, 'Refresh token not found');
+        }
+
+        const decoded = verifyRefreshToken(token) as any;
+
+        const newTokens = generateToken({
+            userId: decoded.userId,
+            role: decoded.role
+        });
+
+        res.cookie("accessToken", newTokens.accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 15 * 60 * 1000, // 15 minutes
+        });
+
+        return sendResponse(res, {
+            data: { accessToken: newTokens.accessToken },
+            message: 'Token refreshed successfully',
+            success: true,
+            statusCode: 200
+        });
+    } catch (error: any) {
+        if (error.name === 'TokenExpiredError') {
+            return next(new AppError(401, 'Refresh token expired, please login again'));
+        }
+        next(new AppError(401, 'Invalid refresh token'));
+    }
+}
+
 export default {
     register,
     login,
     getMe,
-    logout
-}
+    logout,
+    refreshToken
+}
