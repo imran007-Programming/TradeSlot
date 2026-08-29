@@ -24,29 +24,17 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const data = await authService.login(req.body)
-        
+
         if (!data.token) {
             throw new AppError(500, "Token generation failed");
         }
-
-        res.cookie("accessToken", data.token.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 24 * 60 * 60 * 1000,
-        })
-        res.cookie("refreshToken", data.token.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 24 * 60 * 60 * 1000,
-        })
 
         return sendResponse(res, {
             data,
             message: 'user logged in',
             success: true,
             statusCode: 200
-        }
-        )
+        })
     } catch (error) {
         next(error)
     }
@@ -109,13 +97,6 @@ const refreshToken = async (req: Request, res: Response, next: NextFunction) => 
         const newTokens = generateToken({
             userId: decoded.userId,
             role: decoded.role
-        });
-
-        res.cookie("accessToken", newTokens.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            maxAge: 15 * 60 * 1000, // 15 minutes
         });
 
         return sendResponse(res, {
