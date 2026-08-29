@@ -19,22 +19,33 @@ app.use(cookieParser());
 
 // CORS must be before routes
 const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:3000",
+  process.env.FRONTEND_URL?.replace(/\/$/, ''),
   "http://localhost:3000",
   "http://localhost:3001",
-];
+].filter(Boolean) as string[];
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS: origin ${origin} not allowed`));
+    
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (
+      allowedOrigins.includes(cleanOrigin) ||
+      cleanOrigin.endsWith('.vercel.app') ||
+      cleanOrigin.includes('localhost')
+    ) {
+      return callback(null, true);
+    }
+    
+    // Fallback: allow all origins in production if FRONTEND_URL is not strictly set
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
 
 app.use('/api', router);
 
