@@ -17,49 +17,44 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cookieParser());
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5173',
-  'http://127.0.0.1:3000',
-  'https://trade-slot.vercel.app',
-].filter(Boolean) as string[];
-
 // CORS must be before routes
+const allowedOrigins = [
+  process.env.FRONTEND_URL || "http://localhost:3000",
+  "http://localhost:3000",
+  "http://localhost:3001",
+];
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. mobile apps, curl) or if origin is in allowedOrigins / localhost
-    if (!origin || allowedOrigins.includes(origin) || origin.startsWith('http://localhost:')) {
-      callback(null, true);
-    } else {
-      callback(null, true);
-    }
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
   methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use('/api', router);
 
 app.get('/', (req, res) => {
-    res.json({
-        success: true,
-        message: 'TradeSlot API is running',
-        version: '1.0.0',
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-    });
+  res.json({
+    success: true,
+    message: 'TradeSlot API is running',
+    version: '1.0.0',
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.get('/health', (req, res) => {
-    res.json({
-        success: true,
-        message: 'API is running',
-        uptime: process.uptime(),
-        timestamp: new Date().toISOString(),
-    });
+  res.json({
+    success: true,
+    message: 'API is running',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
 });
 
 app.use(globalErrorHandler);
