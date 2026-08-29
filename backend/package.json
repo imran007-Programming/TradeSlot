@@ -5,12 +5,12 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "node ./node_modules/prisma/build/index.js generate --schema=prisma/models && node ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/models && node ./node_modules/typescript/lib/tsc.js",
-    "start": "node dist/server.js",
-    "migrate:deploy": "node ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/models",
-    "db:generate": "node ./node_modules/prisma/build/index.js generate --schema=prisma/models",
-    "db:migrate": "node ./node_modules/prisma/build/index.js migrate dev --schema=prisma/models",
-    "db:reset": "node ./node_modules/prisma/build/index.js migrate reset --schema=prisma/models"
+    "build": "node ./node_modules/prisma/build/index.js generate --schema=prisma/models && node ./node_modules/typescript/lib/tsc.js",
+    "start": "node ./node_modules/prisma/build/index.js migrate deploy --schema=prisma/models && node dist/server.js",
+    "migrate:deploy": "./node_modules/.bin/prisma migrate deploy --schema=prisma/models",
+    "db:generate": "./node_modules/.bin/prisma generate --schema=prisma/models",
+    "db:migrate": "./node_modules/.bin/prisma migrate dev --schema=prisma/models",
+    "db:reset": "./node_modules/.bin/prisma migrate reset --schema=prisma/models"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -27,7 +27,6 @@
     "morgan": "^1.11.0",
     "prisma": "^6.19.3",
     "stripe": "^22.5.0",
-    "typescript": "^5.9.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -38,6 +37,7 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^22.20.1",
     "ts-node-dev": "^2.0.0",
-    "tsx": "^4.23.12"
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
   }
 }
